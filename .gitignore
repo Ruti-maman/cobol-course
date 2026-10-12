@@ -8,3 +8,6 @@
 .env.*
 node_modules/
 .next/
+
+# קבצים שנוצרים אוטומטית בבנייה
+*.tsbuildinfo
