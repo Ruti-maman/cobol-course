@@ -8,7 +8,7 @@ import { signOutAction } from "./actions";
 export const metadata = { title: "כניסה ללומדות · קורס COBOL" };
 
 export default async function LoginPage(props: PageProps<"/login">) {
-  const { next } = await props.searchParams;
+  const { next, error } = await props.searchParams;
   const nextPath = safeNextPath(next);
 
   const supabase = await createSupabaseServerClient();
@@ -41,6 +41,11 @@ export default async function LoginPage(props: PageProps<"/login">) {
           <>
             <h1>כניסה ללומדות</h1>
             <p>בלי סיסמה: נשלח לך קוד חד-פעמי למייל.</p>
+            {error === "link" && (
+              <p className="login-error" role="alert">
+                הקישור מהמייל כבר שומש או שפג תוקפו. בקשי קוד חדש.
+              </p>
+            )}
             <LoginForm next={nextPath} />
           </>
         )}

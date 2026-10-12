@@ -25,6 +25,19 @@ export async function proxy(request: NextRequest) {
     },
   });
 
+  // כניסה מקישור במייל: Supabase מחזיר לאתר עם ?code=… — מחליפים אותו בהתחברות ומנקים את הכתובת.
+  const code = request.nextUrl.searchParams.get("code");
+  if (code && !request.nextUrl.pathname.startsWith("/api/")) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const target = request.nextUrl.clone();
+    target.search = "";
+    target.pathname = "/login";
+    if (error) target.searchParams.set("error", "link");
+    const redirect = NextResponse.redirect(target);
+    for (const cookie of response.cookies.getAll()) redirect.cookies.set(cookie);
+    return redirect;
+  }
+
   await supabase.auth.getUser();
   return response;
 }
