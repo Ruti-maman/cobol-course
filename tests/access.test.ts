@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decideLessonAccess, loadLessonAccess, type AccessSource } from "@/lib/access";
+import { decideLessonAccess, devAccessBypass, loadLessonAccess, type AccessSource } from "@/lib/access";
 import { safeNextPath } from "@/lib/safe-next";
 
 type Row = { user_id: string; lesson_slug: string };
@@ -56,6 +56,18 @@ describe("loadLessonAccess", () => {
   });
   it("תקלת רשת — אין גישה", async () => {
     expect(await loadLessonAccess(fakeClient({ userId: "paid", rows, throws: true }), "files")).toBe("forbidden");
+  });
+});
+
+describe("devAccessBypass", () => {
+  it("באתר החי המעקף לא פועל גם אם ההגדרה קיימת", () => {
+    expect(devAccessBypass({ NODE_ENV: "production", DEV_SKIP_ACCESS: "1" })).toBe(false);
+  });
+  it("בלי ההגדרה המעקף לא פועל", () => {
+    expect(devAccessBypass({ NODE_ENV: "development" })).toBe(false);
+  });
+  it("במחשב, עם ההגדרה — המעקף פועל", () => {
+    expect(devAccessBypass({ NODE_ENV: "development", DEV_SKIP_ACCESS: "1" })).toBe(true);
   });
 });
 

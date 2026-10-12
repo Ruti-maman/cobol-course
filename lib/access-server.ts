@@ -1,4 +1,4 @@
-import { loadLessonAccess, type AccessSource, type LessonAccess } from "./access";
+import { devAccessBypass, loadLessonAccess, type AccessSource, type LessonAccess } from "./access";
 import { createSupabaseServerClient } from "./supabase/server";
 
 type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
@@ -24,6 +24,7 @@ function supabaseAccessSource(supabase: ServerClient): AccessSource {
 
 /** בדיקת זכאות לשיעור עבור הבקשה הנוכחית (לפי עוגיות ההתחברות). */
 export async function getLessonAccess(lessonSlug: string): Promise<LessonAccess> {
+  if (devAccessBypass(process.env)) return "ok";
   try {
     return await loadLessonAccess(supabaseAccessSource(await createSupabaseServerClient()), lessonSlug);
   } catch {
