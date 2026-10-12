@@ -1,17 +1,38 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { LessonWorkspace } from "@/components/LessonWorkspace";
 import { SiteHeader } from "@/components/SiteHeader";
+import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
 import { getPublishedLesson, getPublishedLessons } from "@/lib/course";
 import { getLessonFiles } from "@/lib/media-storage";
 
-// TODO(שלב 2): הדף יחייב התחברות + זכאות לשיעור (CLAUDE.md סעיף 6.1).
+// הדף מחייב התחברות + זכאות לשיעור הספציפי, בשרת (CLAUDE.md סעיף 6.1).
 export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const { slug } = await props.params;
   const lesson = getPublishedLesson(slug);
   if (!lesson) notFound();
+
+  const access = await getLessonAccess(lesson.slug);
+  if (access === "login") redirect(`/login?next=${encodeURIComponent(`/lessons/${lesson.slug}`)}`);
+  if (access !== "ok") {
+    return (
+      <>
+        <SiteHeader wide />
+        <main id="main" className="wrap placeholder">
+          <p className="eyebrow">
+            <b>◆</b> אין גישה לשיעור
+          </p>
+          <h1>{lesson.title}</h1>
+          <p>השיעור הזה לא כלול ברכישה שלך. אם נראה לך שזו טעות, כתבי לנו ונבדוק.</p>
+          <Link className="btn btn-2" href="/">
+            חזרה לדף הבית
+          </Link>
+        </main>
+      </>
+    );
+  }
 
   const inApp = mayStreamVideo((await headers()).get("user-agent"));
   const { videos, assignments } = await getLessonFiles(lesson);

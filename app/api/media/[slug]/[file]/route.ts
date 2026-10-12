@@ -1,12 +1,13 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import path from "node:path";
+import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
 import { getPublishedLesson } from "@/lib/course";
 import { resolveMediaFile } from "@/lib/media-storage";
 
 // הגשת קובצי שיעור (סרטונים ומטלות). זהה במחשב ובאתר החי — ראו lib/media-storage.ts.
-// TODO(שלב 2): לחייב התחברות + זכאות לשיעור לפני הגשת קובץ (CLAUDE.md סעיף 6.1).
+// כל קובץ מוגש רק אחרי התחברות + זכאות לשיעור הספציפי (CLAUDE.md סעיף 6.1).
 
 const contentTypes: Record<string, string> = {
   ".mp4": "video/mp4",
@@ -65,6 +66,10 @@ export async function GET(request: Request, ctx: RouteContext<"/api/media/[slug]
   const { slug, file } = await ctx.params;
   const lesson = getPublishedLesson(slug);
   if (!lesson) return notFound();
+
+  const access = await getLessonAccess(lesson.slug);
+  if (access === "login") return new Response("Login required", { status: 401 });
+  if (access !== "ok") return new Response("Forbidden", { status: 403 });
 
   const fullPath = (await resolveMediaFile(lesson, file)) ?? (await resolveMediaFile(lesson, safeDecode(file)));
   if (!fullPath) return notFound();

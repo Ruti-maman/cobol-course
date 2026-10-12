@@ -387,6 +387,23 @@ section { scroll-margin-block-start: 78px; }
 .placeholder h1 { font-size: var(--t-4); }
 .placeholder p { color: var(--ink-1); font-weight: 300; }
 
+/* כניסה ללומדות — מייל → קוד */
+.login-form { display: grid; gap: 0.75rem; inline-size: min(100%, 26rem); text-align: start; }
+.login-form label { font-weight: 700; }
+.login-form input {
+  font: inherit; font-size: var(--t-1); color: var(--ink-0); background: var(--bg-0);
+  border: 1px solid var(--line-2); border-radius: var(--r-1); padding: 0.7rem 0.9rem; text-align: left;
+}
+.login-form input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.login-form input[name="code"] { letter-spacing: 0.4em; font-size: var(--t-2); text-align: center; }
+.login-form .btn:disabled { opacity: 0.6; cursor: progress; }
+.login-error { font-weight: 700; }
+.login-error::before { content: "!! "; }
+.login-link {
+  font: inherit; color: var(--accent); background: none; border: 0; padding: 0.25rem 0;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer; justify-self: center;
+}
+
 /* ══════════════════════════════════════════════════════════
    תנועה מופחתת
    ══════════════════════════════════════════════════════════ */
