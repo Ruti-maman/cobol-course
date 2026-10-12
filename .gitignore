@@ -1,0 +1,10 @@
+# קובצי מקור של הקורס - לעולם לא נכנסים ל-git (CLAUDE.md סעיף 6.4)
+/content-source/
+/content-processed/
+/content-enhanced/
+/audio-samples/
+
+.env
+.env.*
+node_modules/
+.next/

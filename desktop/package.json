@@ -1,0 +1,13 @@
+{
+  "name": "cobol-course-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "אפליקציית הצפייה של קורס COBOL — חוסמת צילום והקלטת מסך",
+  "main": "main.js",
+  "scripts": {
+    "start": "set ELECTRON_RUN_AS_NODE=&& electron ."
+  },
+  "devDependencies": {
+    "electron": "^44.7.0"
+  }
+}

@@ -1,0 +1,1038 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════
+   TOKENS — כהה הוא העיצוב הראשי; בהיר הוא החלפה מלאה
+   ══════════════════════════════════════════════════════════ */
+/* רוחב דף שיעור — גם הסרגל העליון באותו רוחב */
+:root { --wrap-wide: 1280px; --bar-h: 95px; /* סרגל עליון + שורת FMT */ }
+.bar-in.wide { max-width: var(--wrap-wide); }
+
+:root {
+  /* עיצוב "מסוף מחשב מרכזי" (IBM 3270): שחור, ירוק זרחני, ענבר — שמרני ומסודר */
+  --bg-0: #000000; --bg-1: #000000; --bg-2: #000000; --bg-3: #000000; --bg-4: #000000;
+  /* כמו מסך העריכה SEU/5250: כותרות בלבן, טקסט בירוק, שחור מלא */
+  /* נמדד ממסך העריכה בסרטוני הקורס: ירוק רגוע (#30a231), כותרות לבנות-אפורות, מקשי פונקציה בכחול */
+  /* הירוק שנבחר: #0b903c. כותרות בגוון בהיר יותר של אותו ירוק. (ניגודיות על שחור: 5:1 — עומד ב-AA) */
+  --ink-0: #0b903c; --ink-1: #0b903c; --ink-2: #0b903c; --ink-3: #0b903c;
+  --line-0: #0b903c; --line-1: #0b903c; --line-2: #0b903c;
+  /* ירוק המילוי (כפתורים, הדגשות) — כהה ורגוע, לא זורח (#30a231 נמדד ממסך העריכה בסרטונים) */
+  --c1: #0b903c; --c2: #0b903c; --c3: #0b903c; --c4: #0b903c;
+  --accent: var(--c1); --accent-2: var(--c2); --accent-3: var(--c3); --accent-4: var(--c4);
+  --ok: #0b903c; --bad: #0b903c; --warn: #0b903c;
+  --glass: rgba(11, 144, 60, 0.06);
+  --glass-2: rgba(11, 144, 60, 0.12);
+  --sheen: rgba(11, 144, 60, 0.2);
+  --glow: transparent;
+  --scan-o: 1;
+  --grain-o: 0;
+  --aurora-o: 0;
+  --aurora-blend: screen;
+  --aurora-blob-o: 0;
+  --shadow-2: 0 0 0 1px rgba(57, 255, 110, 0.04);
+  --shadow-3: 0 0 40px -18px rgba(57, 255, 110, 0.35);
+  --term-bg: #000;
+  --term-ink: #0b903c;
+  --on-accent: #000000;
+
+  --t--2: 0.6875rem; --t--1: 0.8125rem; --t-0: 1rem; --t-1: 1.125rem;
+  --t-2: clamp(1.15rem, 1.8vw, 1.4rem);
+  --t-3: clamp(1.6rem, 3vw, 2.3rem);
+  --t-4: clamp(2rem, 4.4vw, 3.4rem);
+  --t-5: clamp(2.5rem, 8vw, 6.2rem);
+
+  --pad: clamp(1rem, 4vw, 2.75rem);
+  --wrap: 1240px;
+  /* פינות ישרות ושמרניות — כמו מסך מסוף */
+  --r-1: 2px; --r-2: 3px; --r-3: 4px; --r-4: 4px;
+  --ease: cubic-bezier(0.22, 0.86, 0.24, 1);
+  --ease-2: cubic-bezier(0.34, 1.3, 0.42, 1);
+  --font-display: var(--font-body);
+
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  /* מצב בהיר: נייר מדפסת "green-bar" — הנייר שעליו הודפסו דוחות COBOL */
+  --bg-0: #f3f7ee; --bg-1: #e6f0df; --bg-2: #fbfdf8; --bg-3: #dcebd3; --bg-4: #cfe3c4;
+  --ink-0: #10261a; --ink-1: #2c4a36; --ink-2: #4b6b55; --ink-3: #6f8a77;
+  --line-0: #c6dcbf; --line-1: #a9c9a1; --line-2: #7fae78;
+  --c1: #0b7a34; --c2: #08592a; --c3: #0b7a34; --c4: #08592a;
+  --accent: var(--c1); --accent-2: var(--c2); --accent-3: var(--c3); --accent-4: var(--c4);
+  --ok: #0b7a34; --bad: #0b7a34; --warn: #0b7a34;
+  --glass: rgba(11, 122, 52, 0.04);
+  --glass-2: rgba(11, 122, 52, 0.08);
+  --sheen: rgba(255, 255, 255, 0.6);
+  --glow: transparent;
+  --scan-o: 0;
+  --shadow-2: 0 1px 0 rgba(16, 38, 26, 0.06);
+  --shadow-3: 0 2px 0 rgba(16, 38, 26, 0.08);
+  --term-bg: #030603;
+  --term-ink: #39ff6e;
+  --on-accent: #ffffff;
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BASE
+   ══════════════════════════════════════════════════════════ */
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg-0); color: var(--ink-0);
+  font-family: var(--font-body), "Segoe UI", system-ui, sans-serif;
+  font-size: var(--t-0); line-height: 1.7;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+h1, h2, h3 {
+  font-family: var(--font-display), "Segoe UI", sans-serif;
+  font-weight: 600; line-height: 1.12; text-wrap: balance; letter-spacing: -0.01em;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+section { scroll-margin-block-start: 78px; }
+
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--pad); }
+.mono { font-family: var(--font-mono), ui-monospace, monospace; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+.eyebrow {
+  font-family: var(--font-mono), monospace; font-size: var(--t--2); letter-spacing: 0.2em;
+  color: var(--ink-2); font-weight: 500;
+}
+.eyebrow b { color: var(--accent); font-weight: 500; }
+.skip-link {
+  position: absolute; inset-inline-start: 1rem; inset-block-start: -4rem; z-index: 100;
+  padding: 0.5rem 1rem; border-radius: var(--r-1); background: var(--accent); color: var(--on-accent);
+}
+.skip-link:focus { inset-block-start: 1rem; }
+
+/* ── רקע: זוהר, הצללה ורעש ── */
+.aurora {
+  position: fixed; inset: 0; z-index: -3; pointer-events: none; overflow: hidden;
+  opacity: var(--aurora-o); background: var(--bg-0);
+}
+.aurora i {
+  position: absolute; display: block; border-radius: 50%;
+  filter: blur(70px); mix-blend-mode: var(--aurora-blend); opacity: var(--aurora-blob-o);
+}
+.aurora i:nth-child(1) { inline-size: 52vw; block-size: 52vw; inset-block-start: -12vw; inset-inline-start: -8vw; background: radial-gradient(circle, var(--c1), transparent 65%); animation: drift1 34s ease-in-out infinite alternate; }
+.aurora i:nth-child(2) { inline-size: 46vw; block-size: 46vw; inset-block-start: 4vw; inset-inline-end: -10vw; background: radial-gradient(circle, var(--c2), transparent 65%); animation: drift2 42s ease-in-out infinite alternate; }
+.aurora i:nth-child(3) { inline-size: 40vw; block-size: 40vw; inset-block-start: 52vh; inset-inline-start: 22vw; background: radial-gradient(circle, var(--c4), transparent 66%); animation: drift3 38s ease-in-out infinite alternate; }
+.aurora i:nth-child(4) { inline-size: 36vw; block-size: 36vw; inset-block-end: -8vw; inset-inline-end: 8vw; background: radial-gradient(circle, var(--c3), transparent 66%); animation: drift4 46s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate3d(9vw, 7vh, 0) scale(1.16); } }
+@keyframes drift2 { to { transform: translate3d(-8vw, 11vh, 0) scale(1.1); } }
+@keyframes drift3 { to { transform: translate3d(11vw, -9vh, 0) scale(1.2); } }
+@keyframes drift4 { to { transform: translate3d(-10vw, -7vh, 0) scale(1.13); } }
+.veil {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 0%, transparent, color-mix(in srgb, var(--bg-0) 70%, transparent) 72%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--bg-0) 30%, transparent), color-mix(in srgb, var(--bg-0) 78%, transparent));
+}
+.grain {
+  position: fixed; inset: 0; z-index: 70; pointer-events: none; opacity: var(--grain-o);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ══════════════════════════════════════════════════════════
+   סרגל עליון
+   ══════════════════════════════════════════════════════════ */
+.bar {
+  position: sticky; top: 0; z-index: 60;
+  background: color-mix(in srgb, var(--bg-0) 64%, transparent);
+  backdrop-filter: blur(22px) saturate(1.7);
+  border-block-end: 1px solid var(--line-0);
+}
+.bar-in { display: flex; align-items: center; gap: 1rem; min-height: 60px; }
+.brand { display: flex; align-items: center; gap: 0.6rem; color: var(--ink-0); text-decoration: none; white-space: nowrap; }
+.brand .sig {
+  inline-size: 28px; block-size: 28px; border-radius: 8px; display: grid; place-items: center;
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  color: var(--bg-0); font-family: var(--font-mono), monospace; font-weight: 700; font-size: 0.7rem;
+  box-shadow: 0 0 22px -6px var(--accent);
+}
+.brand b { font-weight: 600; }
+.brand span { color: var(--ink-3); font-size: var(--t--1); }
+.bar nav { display: flex; gap: 1.4rem; margin-inline-start: auto; }
+.bar nav a { color: var(--ink-1); font-size: 0.9375rem; font-weight: 500; text-decoration: none; position: relative; }
+.bar nav a::after {
+  content: ""; position: absolute; inset-block-end: -4px; inset-inline-start: 0;
+  inline-size: 0; block-size: 1px; background: var(--accent); transition: inline-size 0.3s var(--ease);
+}
+.bar nav a:hover { color: var(--ink-0); }
+.bar nav a:hover::after { inline-size: 100%; }
+.tools { display: flex; gap: 0.45rem; align-items: center; margin-inline-start: 1.4rem; }
+.kbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+  min-block-size: 36px; min-inline-size: 36px;
+  border: 1px solid var(--line-1); border-radius: 999px; padding: 0.3rem 0.8rem;
+  font-size: var(--t--1); font-weight: 500; color: var(--ink-1); text-decoration: none; white-space: nowrap;
+  background: var(--glass); cursor: pointer; transition: 0.22s var(--ease);
+}
+.kbtn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+@media (max-width: 860px) {
+  .bar nav { display: none; }
+  .tools { margin-inline-start: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════ */
+.hero { position: relative; isolation: isolate; overflow: clip; padding-block: clamp(2.5rem, 8vh, 5.5rem) clamp(2.5rem, 7vh, 4.5rem); }
+.hero-glow {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(58% 52% at 86% 10%, color-mix(in srgb, var(--c1) 26%, transparent), transparent 68%),
+    radial-gradient(48% 48% at 14% 6%, color-mix(in srgb, var(--c2) 22%, transparent), transparent 70%),
+    radial-gradient(52% 46% at 30% 96%, color-mix(in srgb, var(--c4) 14%, transparent), transparent 70%);
+}
+.hero-grid { display: grid; gap: clamp(2rem, 4vw, 3rem); grid-template-columns: minmax(0, 1fr); }
+.hero-l { display: grid; gap: 1.35rem; justify-items: start; }
+.hero h1 { font-size: var(--t-5); font-weight: 600; line-height: 1.06; }
+.hero h1 em {
+  font-style: normal; position: relative;
+  background: linear-gradient(100deg, var(--c1) 0%, var(--c2) 40%, var(--c4) 75%, var(--c3) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lede { max-width: 54ch; font-size: var(--t-1); color: var(--ink-1); font-weight: 300; }
+.lede b { color: var(--ink-0); font-weight: 600; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem; position: relative; overflow: hidden;
+  min-block-size: 46px; padding: 0.72rem 1.4rem; border-radius: 999px;
+  font-weight: 600; font-size: 0.9375rem; text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.24s var(--ease-2), box-shadow 0.24s, border-color 0.24s, color 0.24s;
+}
+.btn-1 {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--on-accent);
+  box-shadow: 0 10px 34px -14px var(--accent), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.btn-1:hover { transform: translateY(-3px); box-shadow: 0 18px 46px -16px var(--accent); }
+.btn-2 { border-color: var(--line-1); color: var(--ink-0); background: var(--glass); }
+.btn-2:hover { transform: translateY(-3px); border-color: var(--accent); color: var(--accent); }
+.btn .shine {
+  position: absolute; inset-block: 0; inset-inline-start: -40%; inline-size: 40%;
+  background: linear-gradient(100deg, transparent, var(--sheen), transparent); opacity: 0;
+}
+.btn:hover .shine { animation: sweep 0.75s var(--ease) forwards; }
+@keyframes sweep { 0% { inset-inline-start: -40%; opacity: 1; } 100% { inset-inline-start: 110%; opacity: 0; } }
+
+.counts { display: flex; flex-wrap: wrap; gap: 0.6rem 2.6rem; margin: 0; }
+.counts div { display: grid; gap: 0.1rem; }
+.counts dd {
+  margin: 0; order: -1;
+  font-family: var(--font-display), sans-serif; font-weight: 600; font-size: clamp(1.7rem, 3vw, 2.3rem); line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(150deg, var(--ink-0), var(--ink-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.counts dt { font-size: var(--t--1); color: var(--ink-2); }
+
+/* ── חלון טרמינל עם קוד COBOL וסרגל עמודות ── */
+.console {
+  position: relative; inline-size: 100%; max-inline-size: 760px;
+  background: linear-gradient(165deg, color-mix(in srgb, var(--bg-2) 76%, transparent), color-mix(in srgb, var(--bg-1) 70%, transparent));
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--line-1); border-radius: var(--r-4);
+  box-shadow: var(--shadow-3); overflow: hidden;
+}
+.console::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--c1) 14%, transparent), color-mix(in srgb, var(--c2) 9%, transparent) 42%, transparent 64%);
+}
+.c-head {
+  position: relative; display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.8rem 1.1rem; border-block-end: 1px solid var(--line-0); background: var(--glass);
+}
+.c-dots { display: flex; gap: 0.3rem; }
+.c-dots i { inline-size: 9px; block-size: 9px; border-radius: 50%; }
+.c-dots i:nth-child(1) { background: color-mix(in srgb, var(--bad) 70%, transparent); }
+.c-dots i:nth-child(2) { background: color-mix(in srgb, var(--warn) 70%, transparent); }
+.c-dots i:nth-child(3) { background: color-mix(in srgb, var(--ok) 70%, transparent); }
+.c-title { font-family: var(--font-mono), monospace; font-size: var(--t--1); color: var(--ink-1); }
+.c-status {
+  margin-inline-start: auto; display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-mono), monospace; font-size: var(--t--2); letter-spacing: 0.1em;
+  padding: 0.22rem 0.6rem; border-radius: 999px;
+  background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok);
+}
+.c-status i { inline-size: 6px; block-size: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.15); } }
+
+.term {
+  position: relative; margin: 0.7rem; border-radius: var(--r-2);
+  background: var(--term-bg); border: 1px solid var(--line-0);
+  font-family: var(--font-mono), monospace; font-size: clamp(0.62rem, 1.6vw, 0.8rem); line-height: 1.85;
+  color: var(--term-ink); direction: ltr; text-align: left;
+  overflow-x: auto; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.term pre { margin: 0; padding: 0.4rem 0 0.9rem; min-inline-size: max-content; }
+.term .ruler, .term .row { display: grid; grid-template-columns: 6ch 1ch 4ch auto; padding-inline: 1rem; white-space: pre; }
+.term .ruler {
+  padding-block: 0.45rem; margin-block-end: 0.3rem; border-block-end: 1px dashed color-mix(in srgb, var(--term-ink) 18%, transparent);
+  font-size: 0.85em; color: color-mix(in srgb, var(--term-ink) 45%, transparent);
+}
+.term .ruler span:nth-child(2) { color: var(--accent-3); }
+.term .ruler span:nth-child(3) { color: var(--accent); }
+.term .ruler span:nth-child(4) { color: var(--accent-2); }
+.term .seq { color: color-mix(in srgb, var(--term-ink) 35%, transparent); }
+.term .ind { color: var(--accent-3); }
+.term .kw { color: var(--c1); }
+.term .div { color: var(--c2); font-weight: 700; }
+.term .str { color: var(--c3); }
+.term .num { color: var(--c4); }
+.term .cmt { color: color-mix(in srgb, var(--term-ink) 50%, transparent); font-style: italic; }
+.term .cur { display: inline-block; inline-size: 0.55em; block-size: 1em; background: var(--accent); vertical-align: -0.15em; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.c-foot { position: relative; display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0 1.1rem 1.1rem; }
+.c-foot span {
+  font-family: var(--font-mono), monospace; font-size: var(--t--2); padding: 0.22rem 0.55rem; border-radius: 6px;
+  background: var(--glass); border: 1px solid var(--line-0); color: var(--ink-2);
+}
+
+/* ── פס מילות מפתח ── */
+.marq {
+  position: relative; overflow: hidden; padding-block: 0.85rem;
+  border-block: 1px solid var(--line-0); background: var(--bg-1);
+  mask: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marq-t { display: flex; gap: 2.4rem; width: max-content; animation: marqR 50s linear infinite; }
+.marq:hover .marq-t { animation-play-state: paused; }
+.marq span {
+  font-family: var(--font-mono), monospace; font-size: var(--t--1); color: var(--ink-2); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 2.4rem;
+}
+.marq span::after { content: "◆"; color: var(--accent); font-size: 0.55em; opacity: 0.6; }
+@keyframes marqR { to { transform: translateX(50%); } }
+
+/* ══════════════════════════════════════════════════════════
+   SECTIONS
+   ══════════════════════════════════════════════════════════ */
+.band { padding-block: clamp(3rem, 9vh, 6rem); position: relative; }
+.band.alt {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-1) 80%, transparent), color-mix(in srgb, var(--bg-0) 70%, transparent));
+  border-block: 1px solid var(--line-0);
+}
+.band + .band::before {
+  content: ""; position: absolute; inset-block-start: 0; inset-inline: 0; block-size: 1px;
+  background: linear-gradient(to left, transparent, color-mix(in srgb, var(--c2) 50%, transparent), color-mix(in srgb, var(--c1) 50%, transparent), transparent);
+}
+.head { display: grid; gap: 0.7rem; margin-block-end: clamp(1.6rem, 3.4vw, 2.6rem); max-width: 64ch; }
+.head h2 { font-size: var(--t-4); }
+.head p { color: var(--ink-1); font-weight: 300; font-size: var(--t-1); }
+
+/* ── רשימת השיעורים ── */
+.lessons { display: grid; gap: 0.75rem; counter-reset: lesson; }
+.lesson {
+  display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1.2rem; align-items: start;
+  padding: clamp(1rem, 2.4vw, 1.4rem) clamp(1rem, 2.6vw, 1.6rem);
+  border: 1px solid var(--line-0); border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--bg-2) 55%, transparent);
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s;
+}
+.lesson:hover { border-color: var(--line-2); transform: translateY(-2px); background: color-mix(in srgb, var(--bg-2) 80%, transparent); }
+.lesson .no {
+  grid-row: span 3; font-family: var(--font-mono), monospace; font-weight: 700; font-size: var(--t-2);
+  color: var(--accent); min-inline-size: 2.6ch; line-height: 1.3;
+}
+.lesson.intro .no { color: var(--accent-3); }
+.lesson h3 { font-size: var(--t-2); display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem; }
+.lesson .meta { font-family: var(--font-body), sans-serif; font-size: var(--t--1); font-weight: 400; color: var(--ink-2); letter-spacing: 0; }
+.lesson p { color: var(--ink-1); font-weight: 300; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-block-start: 0.4rem; padding: 0; list-style: none; }
+.chips li {
+  font-family: var(--font-mono), monospace; font-size: var(--t--2); padding: 0.18rem 0.55rem; border-radius: 6px;
+  background: var(--glass); border: 1px solid var(--line-0); color: var(--ink-1);
+}
+
+/* ── כרטיסי יתרונות ── */
+.cards { display: grid; gap: 0.9rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+.card {
+  position: relative; display: grid; gap: 0.6rem; align-content: start;
+  padding: 1.4rem; border-radius: var(--r-3);
+  border: 1px solid var(--line-0); background: color-mix(in srgb, var(--bg-2) 60%, transparent);
+  box-shadow: var(--shadow-2);
+}
+.card .ic {
+  inline-size: 42px; block-size: 42px; border-radius: 12px; display: grid; place-items: center;
+  color: var(--h, var(--accent)); background: color-mix(in srgb, var(--h, var(--accent)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--h, var(--accent)) 30%, transparent);
+}
+.card h3 { font-size: var(--t-1); font-family: var(--font-body), sans-serif; font-weight: 700; letter-spacing: 0; }
+.card p { color: var(--ink-1); font-weight: 300; font-size: 0.9375rem; }
+
+/* ── מחיר / קריאה לפעולה ── */
+.cta-box {
+  position: relative; overflow: hidden; display: grid; gap: 1.2rem; justify-items: start;
+  padding: clamp(1.6rem, 5vw, 3rem); border-radius: var(--r-4);
+  border: 1px solid var(--line-1); background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  box-shadow: var(--shadow-3);
+}
+.cta-box::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, var(--c1) 18%, transparent), transparent 70%),
+              radial-gradient(50% 70% at 0% 100%, color-mix(in srgb, var(--c2) 16%, transparent), transparent 70%);
+}
+.cta-box > * { position: relative; }
+.cta-box h2 { font-size: var(--t-4); }
+.cta-box p { color: var(--ink-1); font-weight: 300; font-size: var(--t-1); max-width: 56ch; }
+
+/* ── פוטר ── */
+.foot { border-block-start: 1px solid var(--line-0); padding-block: 1.6rem; color: var(--ink-2); font-size: var(--t--1); }
+.foot-in { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.6rem 1.5rem; }
+
+/* ── דף זמני ── */
+.placeholder { min-block-size: 70vh; display: grid; place-content: center; justify-items: center; gap: 1rem; text-align: center; }
+.placeholder h1 { font-size: var(--t-4); }
+.placeholder p { color: var(--ink-1); font-weight: 300; }
+
+/* ══════════════════════════════════════════════════════════
+   תנועה מופחתת
+   ══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   דף שיעור
+   ══════════════════════════════════════════════════════════ */
+.lesson { position: relative; }
+.lesson-link { color: inherit; text-decoration: none; }
+.lesson-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.lesson-link:hover { color: var(--accent); }
+
+.screen {
+  border-radius: var(--r-3); overflow: hidden; border: 1px solid var(--line-1);
+  background: #000; box-shadow: var(--shadow-3); aspect-ratio: 16 / 10;
+}
+.screen video { display: block; inline-size: 100%; block-size: 100%; background: #000; }
+.downloads { display: grid; gap: 0.8rem; }
+.downloads h2 { font-size: var(--t-2); }
+.downloads ul { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+.downloads .fmt {
+  font-family: var(--font-mono), monospace; font-size: var(--t--2); padding: 0.1rem 0.4rem; border-radius: 5px;
+  background: color-mix(in srgb, var(--accent-2) 18%, transparent); color: var(--accent-2);
+}
+.empty { color: var(--ink-2); }
+
+/* ── הגנת צפייה ── */
+.screen.protected { position: relative; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.screen.protected:fullscreen { border-radius: 0; border: 0; aspect-ratio: auto; display: grid; place-items: center; }
+.screen.protected:fullscreen video { max-block-size: 100vh; }
+.watermark {
+  position: absolute; z-index: 2; pointer-events: none; white-space: nowrap;
+  font-size: clamp(0.65rem, 1.4vw, 0.9rem); font-weight: 600; color: rgba(255, 255, 255, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: top 1.2s var(--ease), left 1.2s var(--ease);
+}
+.shield {
+  position: absolute; inset: 0; z-index: 10; display: grid; place-content: center; gap: 0.3rem; text-align: center;
+  background: #fff; color: #121430;
+}
+.shield p { font-family: var(--font-display), sans-serif; font-weight: 600; font-size: var(--t-3); }
+.shield span { color: #5f6685; }
+@media print { .screen, .player { display: none !important; } }
+
+/* ── הודעה: צפייה באפליקציה בלבד ── */
+.app-only {
+  display: grid; gap: 0.7rem; justify-items: center; text-align: center;
+  padding: clamp(2rem, 6vw, 3.5rem) 1.4rem; border-radius: var(--r-3);
+  border: 1px dashed var(--line-2); background: color-mix(in srgb, var(--bg-2) 60%, transparent);
+}
+.app-only .ic {
+  inline-size: 56px; block-size: 56px; border-radius: 16px; display: grid; place-items: center;
+  color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.app-only h2 { font-size: var(--t-3); }
+.app-only p { color: var(--ink-1); font-weight: 300; max-width: 52ch; }
+
+/* ── תווית "שיעור N מתוך M" בדף שיעור — בולטת מהרגע הראשון ── */
+.head .lesson-badge {
+  justify-self: start; display: inline-flex; align-items: baseline; gap: 0.6rem;
+  padding: 0.45rem 1.15rem; border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--on-accent);
+  box-shadow: 0 10px 30px -12px var(--accent);
+  font-family: var(--font-body), sans-serif; font-size: var(--t-2); font-weight: 400; line-height: 1.4;
+}
+.head .lesson-badge strong { font-weight: 900; font-size: 1.15em; }
+.head .lesson-badge span { opacity: 0.85; font-size: 0.85em; }
+
+/* ── מסך סיום: מעבר לסרטון הבא (כמו ביוטיוב) ── */
+.endscreen {
+  position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: 1rem;
+  padding: 1rem; background: rgba(5, 8, 20, 0.82); backdrop-filter: blur(6px); color: #fff; text-align: center;
+}
+.next-card {
+  display: grid; justify-items: center; gap: 0.6rem; cursor: pointer; text-decoration: none; color: #fff;
+  padding: 1.2rem 2rem; border-radius: var(--r-3); border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06); font: inherit; max-inline-size: 90%;
+  transition: transform 0.2s var(--ease-2), background 0.2s, border-color 0.2s;
+}
+a.next-card:hover, button.next-card:hover { transform: scale(1.04); background: rgba(255, 255, 255, 0.12); border-color: var(--accent); color: #fff; }
+.next-card.done { cursor: default; }
+.next-label { font-size: var(--t--1); color: rgba(255, 255, 255, 0.75); white-space: nowrap; }
+.next-title { font-size: var(--t-2); font-weight: 800; }
+.next-play {
+  position: relative; inline-size: 68px; block-size: 68px; border-radius: 50%; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--on-accent);
+  box-shadow: 0 10px 30px -10px var(--accent);
+}
+/* טבעת ספירה לאחור סביב כפתור הניגון */
+@property --ring { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+.next-play.counting::before {
+  content: ""; position: absolute; inset: -7px; border-radius: 50%;
+  background: conic-gradient(#fff var(--ring), transparent 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  animation: ring-fill var(--autoplay-s, 8s) linear forwards;
+}
+@keyframes ring-fill { to { --ring: 100%; } }
+.end-actions { display: flex; gap: 0.6rem; }
+.end-actions a { display: inline-flex; align-items: center; color: #fff; text-decoration: none; font-size: var(--t--1); padding: 0.4rem 1rem; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.3); }
+.end-actions a:hover { border-color: #fff; }
+.end-actions button {
+  cursor: pointer; font: inherit; font-size: var(--t--1); color: #fff; padding: 0.4rem 1rem; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3); background: transparent;
+}
+.end-actions button:hover { border-color: #fff; }
+@media (max-width: 520px) {
+  .next-card { padding: 0.8rem 1.2rem; gap: 0.4rem; }
+  .next-play { inline-size: 52px; block-size: 52px; }
+  .next-title { font-size: var(--t-0); }
+}
+
+/* ── לחיצה על הסרטון: עצירה/המשך + אייקון מהבהב ── */
+.screen video { cursor: pointer; }
+.play-flash {
+  position: absolute; z-index: 4; top: 50%; left: 50%; translate: -50% -50%;
+  inline-size: 76px; block-size: 76px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(0, 0, 0, 0.55); color: #fff; pointer-events: none;
+  animation: play-flash 0.7s ease-out forwards;
+}
+@keyframes play-flash { from { opacity: 1; scale: 0.85; } to { opacity: 0; scale: 1.35; } }
+
+/* ── חלון צפייה במשימה ── */
+.viewer {
+  margin: auto; inline-size: min(760px, 100vw - 2rem); block-size: min(82vh, 980px); max-inline-size: none; max-block-size: none;
+  padding: 0; border: 1px solid var(--line-1); border-radius: var(--r-3); overflow: hidden;
+  background: var(--bg-1); color: var(--ink-0); box-shadow: var(--shadow-3);
+}
+.viewer::backdrop { background: rgba(4, 6, 16, 0.7); backdrop-filter: blur(4px); }
+.viewer-in { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); block-size: 100%; }
+.viewer-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem;
+  padding: 0.75rem 1rem; border-block-end: 1px solid var(--line-0); background: var(--bg-2);
+}
+.viewer-bar h2 { font-size: var(--t-0); font-family: var(--font-body), sans-serif; font-weight: 800; letter-spacing: 0; margin-inline-end: auto; }
+.viewer-tabs { display: flex; gap: 0.25rem; padding: 0.2rem; border-radius: 999px; background: var(--glass-2); }
+.viewer-tabs button {
+  cursor: pointer; font-family: var(--font-mono), monospace; font-size: var(--t--2); padding: 0.3rem 0.8rem;
+  border: 0; border-radius: 999px; background: none; color: var(--ink-1);
+}
+.viewer-tabs button[aria-selected="true"] { background: var(--bg-0); color: var(--accent); }
+.viewer-dl { min-block-size: 40px; padding: 0.45rem 1.1rem; }
+.viewer-close {
+  inline-size: 40px; block-size: 40px; border-radius: 50%; cursor: pointer; font-size: 1rem;
+  border: 1px solid var(--line-1); background: var(--glass); color: var(--ink-1);
+}
+.viewer-close:hover { border-color: var(--accent); color: var(--accent); }
+.viewer-body { overflow: auto; background: #e9e9ef; }
+.viewer-body iframe { display: block; inline-size: 100%; block-size: 100%; border: 0; background: #fff; }
+.viewer-msg { padding: 2rem; text-align: center; color: #414765; }
+.docx-host .docx-wrapper { background: #e9e9ef; padding: 1rem; }
+/* עמוד Word ברוחב A4 (~794px) מוקטן כך שייכנס לחלון */
+.docx-host { zoom: var(--docx-zoom, 0.82); }
+.docx-host .docx-wrapper > section.docx { box-shadow: 0 4px 18px rgba(18, 20, 48, 0.15); margin-block-end: 1rem; }
+.docx-host.fluid { zoom: 1; }
+.docx-host.fluid .docx-wrapper { padding: 0.5rem; }
+.docx-host.fluid .docx-wrapper > section.docx { padding: 1.2rem 1rem !important; inline-size: auto !important; min-block-size: 0 !important; }
+.docx-host.fluid .docx-wrapper { align-items: stretch; }
+.docx-host.fluid section.docx * { max-inline-size: 100%; overflow-wrap: anywhere; }
+.docx-host.fluid table { table-layout: fixed; inline-size: 100% !important; }
+@media (max-width: 520px) {
+  .viewer { inset: 0; margin: 0; inline-size: 100%; block-size: 100%; border-radius: 0; border: 0; }
+  .viewer-bar { padding: 0.6rem 0.7rem; }
+  .viewer-bar h2 { flex-basis: 100%; order: -1; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   דף שיעור — הכול במסך אחד במחשב (בלי גלילה), גלילה רגילה בטלפון
+   ══════════════════════════════════════════════════════════ */
+.lesson-page {
+  --side-w: 300px;
+  --video-max: 860px;
+  --gap: clamp(1.4rem, 2.6vw, 2.4rem);
+  max-width: var(--wrap-wide);
+  display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: clamp(1rem, 2.6vh, 1.8rem);
+  padding-block: clamp(1.2rem, 3vh, 2.4rem) 1.6rem;
+}
+.lesson-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 1rem; margin: 0; max-width: none; }
+.lesson-head .lesson-badge { font-size: var(--t-1); padding: 0.35rem 1rem; }
+.lesson-head h1 { font-size: clamp(1.5rem, 2.6vw, 2.2rem); }
+.lesson-head > p:last-child {
+  flex-basis: 100%; font-size: var(--t-0); color: var(--ink-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.player { display: grid; gap: var(--gap, 1.1rem); grid-template-columns: minmax(0, 1fr); }
+.stage { display: grid; }
+
+/* עמודת הצד */
+.side { display: flex; flex-direction: column; gap: 1.1rem; min-inline-size: 0; }
+.side-block {
+  display: grid; gap: 0.55rem; padding: 0.8rem; border-radius: var(--r-3);
+  border: 1px solid var(--line-0); background: color-mix(in srgb, var(--bg-2) 62%, transparent);
+  backdrop-filter: blur(8px);
+}
+.side-title {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding-inline: 0.2rem;
+  font-family: var(--font-body), sans-serif; font-size: var(--t--1); font-weight: 700; letter-spacing: 0; color: var(--ink-1);
+}
+.side-title span { font-family: var(--font-mono), monospace; font-weight: 500; color: var(--ink-3); }
+
+/* רשימת הסרטונים */
+.playlist { display: grid; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.playlist button {
+  inline-size: 100%; display: flex; align-items: center; gap: 0.7rem; text-align: start; cursor: pointer;
+  min-block-size: 44px; padding: 0.45rem 0.6rem; border-radius: var(--r-2);
+  border: 1px solid transparent; background: transparent; color: var(--ink-1); font: inherit; font-size: 0.9375rem;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.playlist button:hover { background: var(--glass-2); color: var(--ink-0); }
+.playlist button[aria-current="true"] {
+  color: var(--ink-0); font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 11%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.playlist .idx {
+  inline-size: 28px; block-size: 28px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--font-mono), monospace; font-size: var(--t--2); font-weight: 600;
+  color: var(--ink-2); background: var(--glass-2); border: 1px solid var(--line-1);
+}
+.playlist button[aria-current="true"] .idx {
+  color: var(--on-accent); border-color: transparent; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+.playlist .name { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* משימה */
+.assignments ul { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+.assignment { display: grid; gap: 0.45rem; }
+.assignment-open {
+  display: flex; align-items: center; gap: 0.65rem; inline-size: 100%; cursor: pointer; text-align: start;
+  min-block-size: 48px; padding: 0.45rem 0.55rem; border-radius: var(--r-2);
+  border: 1px solid var(--line-1); background: var(--glass); color: var(--ink-0); font: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+.assignment-open:hover { border-color: var(--accent-2); background: var(--glass-2); }
+.assignment-open .ic {
+  inline-size: 34px; block-size: 34px; flex: none; border-radius: 10px; display: grid; place-items: center;
+  color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 14%, transparent);
+}
+.assignment-open .t { min-inline-size: 0; flex: 1; font-weight: 600; font-size: 0.9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.assignment-open .cta {
+  flex: none; font-weight: 700; font-size: var(--t--2); padding: 0.3rem 0.8rem; border-radius: 999px;
+  color: var(--on-accent); background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+.assignment-dl { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.assignment-dl a {
+  display: inline-flex; align-items: center; gap: 0.35rem; min-block-size: 32px; padding: 0.2rem 0.7rem;
+  border-radius: 999px; border: 1px solid var(--line-1); color: var(--ink-2); text-decoration: none;
+  font-family: var(--font-mono), monospace; font-size: var(--t--2);
+}
+.assignment-dl a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* מעבר בין שיעורים */
+.lesson-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-block-start: auto; }
+.nav-btn {
+  display: flex; align-items: center; gap: 0.6rem; min-block-size: 56px; padding: 0.5rem 0.9rem;
+  border-radius: var(--r-2); text-decoration: none; line-height: 1.25; font-weight: 700; font-size: 0.9375rem;
+  transition: transform 0.2s var(--ease-2), box-shadow 0.2s, border-color 0.2s;
+}
+.nav-btn small { display: block; font-size: var(--t--2); font-weight: 500; opacity: 0.75; }
+.nav-btn .arrow { font-size: 1.1rem; }
+.nav-btn.prev { border: 1px solid var(--line-1); background: var(--glass); color: var(--ink-0); }
+.nav-btn.prev:hover { border-color: var(--accent); transform: translateY(-2px); }
+.nav-btn.next {
+  grid-column: 2; justify-content: flex-end; text-align: end; color: var(--on-accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 26px -14px var(--accent);
+}
+.nav-btn.next:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -14px var(--accent); }
+
+/* מחשב: נגן + עמודת צד, בגובה המסך */
+@media (min-width: 960px) {
+  /* התוכן ממורכז אנכית במסך שמתחת לסרגל — אוויר מלמעלה ומלמטה */
+  .lesson-page { min-block-size: calc(100dvh - var(--bar-h)); align-content: center; }
+  /* הנגן ועמודת הצד ממורכזים יחד, ברוחב מתון */
+  .lesson-page .lesson-head, .player { inline-size: min(100%, calc(var(--video-max) + var(--side-w) + var(--gap))); justify-self: center; }
+  .player { grid-template-columns: minmax(0, 1fr) var(--side-w); align-items: stretch; }
+  /* הסרטון: עד 860px רוחב, ולא יותר ממה שנשאר בגובה המסך (יחס 16:10) */
+  .player .screen, .player .stage { align-self: start; inline-size: min(100%, var(--video-max), (100dvh - var(--bar-h) - 13rem) * 1.6); }
+  .side { max-block-size: calc(min(var(--video-max), (100dvh - var(--bar-h) - 13rem) * 1.6) / 1.6); overflow: auto; scrollbar-width: thin; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   פרויקט הסיום — כרטיס חגיגי ובולט
+   ══════════════════════════════════════════════════════════ */
+@property --fp-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.final-project {
+  position: relative; isolation: isolate; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
+  gap: 0.9rem 1.4rem; text-align: start;
+  padding: 1rem 1.4rem; border-radius: var(--r-3); overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--c3) 22%, transparent), transparent 60%),
+    radial-gradient(90% 70% at 100% 100%, color-mix(in srgb, var(--c4) 18%, transparent), transparent 65%),
+    color-mix(in srgb, var(--bg-2) 85%, transparent);
+  box-shadow: 0 18px 44px -18px color-mix(in srgb, var(--c3) 70%, transparent);
+}
+/* מסגרת צבעונית מסתובבת */
+.final-project::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 2px;
+  background: conic-gradient(from var(--fp-angle), var(--c3), var(--c4), var(--c2), var(--c1), var(--c3));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: fp-spin 6s linear infinite;
+}
+@keyframes fp-spin { to { --fp-angle: 360deg; } }
+.fp-badge {
+  display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.75rem; border-radius: 999px;
+  font-size: var(--t--2); font-weight: 800; letter-spacing: 0.04em; color: #fff;
+  background: linear-gradient(135deg, var(--c3), var(--c4));
+}
+.fp-trophy {
+  inline-size: 64px; block-size: 64px; border-radius: 20px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(140deg, var(--c3), var(--c4) 55%, var(--c2));
+  box-shadow: 0 12px 28px -10px var(--c4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  animation: fp-float 3.2s ease-in-out infinite;
+}
+@keyframes fp-float { 50% { transform: translateY(-4px) rotate(-3deg); } }
+.final-project h2 {
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem); font-weight: 700; line-height: 1.15;
+  background: linear-gradient(100deg, var(--c3), var(--c4) 50%, var(--c2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.final-project p { color: var(--ink-1); font-size: var(--t--1); line-height: 1.55; margin-block-start: 0.15rem; }
+.fp-text { display: grid; justify-items: start; gap: 0.25rem; min-inline-size: 0; }
+.fp-actions { display: grid; gap: 0.45rem; justify-items: center; min-inline-size: 210px; }
+.fp-open {
+  position: relative; overflow: hidden; inline-size: 100%; min-block-size: 46px; cursor: pointer;
+  border: 0; border-radius: 999px; font: inherit; font-weight: 800; font-size: 0.9375rem; color: #fff;
+  background: linear-gradient(135deg, var(--c3), var(--c4) 60%, var(--c2));
+  box-shadow: 0 12px 28px -12px var(--c4);
+  transition: transform 0.2s var(--ease-2), box-shadow 0.2s;
+}
+.fp-open:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -12px var(--c4); }
+.fp-open .shine {
+  position: absolute; inset-block: 0; inset-inline-start: -40%; inline-size: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: sweep 2.8s var(--ease) infinite;
+}
+.fp-dl { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem; }
+.fp-dl a {
+  display: inline-flex; align-items: center; gap: 0.35rem; min-block-size: 32px; padding: 0.2rem 0.75rem;
+  border-radius: 999px; border: 1px solid color-mix(in srgb, var(--c4) 45%, transparent);
+  color: var(--ink-1); text-decoration: none; font-size: var(--t--2); font-weight: 600;
+}
+.fp-dl a:hover { color: var(--c4); border-color: var(--c4); }
+
+/* פרויקט סיום: מיושר לרוחב הנגן; בדף שיש בו פרויקט הסרטון קטן מעט כדי שהכול ייכנס בלי גלילה */
+@media (min-width: 960px) {
+  .lesson-page .final-project { inline-size: min(100%, calc(var(--video-max) + var(--side-w) + var(--gap))); justify-self: center; }
+  .lesson-page:has(.final-project) .player .screen,
+  .lesson-page:has(.final-project) .player .stage { inline-size: min(100%, var(--video-max), (100dvh - var(--bar-h) - 22rem) * 1.6); }
+  .lesson-page:has(.final-project) .side { max-block-size: calc(min(var(--video-max), (100dvh - var(--bar-h) - 22rem) * 1.6) / 1.6); }
+}
+@media (max-width: 720px) {
+  .final-project { grid-template-columns: auto minmax(0, 1fr); padding: 1rem; }
+  .fp-actions { grid-column: 1 / -1; min-inline-size: 0; }
+  .fp-trophy { inline-size: 52px; block-size: 52px; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   עיצוב מסוף COBOL — שכבת מראה בלבד (המבנה והכפתורים לא השתנו)
+   ══════════════════════════════════════════════════════════ */
+::selection { background: var(--accent); color: var(--on-accent); }
+html { scrollbar-color: var(--line-2) var(--bg-0); }
+:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; border-radius: 0; }
+
+/* רקע: שחור עם קווי סריקה של מסך ישן + סרגל עמודות COBOL עדין (7 · 8 · 12 · 72) */
+.aurora, .grain { display: none; }
+.veil {
+  opacity: var(--scan-o);
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.35) 2px 3px),
+    radial-gradient(130% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.75));
+}
+body {
+  background:
+    radial-gradient(70% 50% at 50% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%),
+    var(--bg-0);
+  background-attachment: fixed;
+}
+body, h1, h2, h3, .lesson .meta, .card h3, .viewer-bar h2, .side-title { font-family: var(--font-body), "Segoe UI", sans-serif; }
+h1, h2, h3 { font-weight: 700; letter-spacing: 0; }
+h1, h2 { text-shadow: 0 0 18px var(--glow); }
+.mono, .eyebrow, .c-title, .c-status, .chips li, .marq span, .side-title span, .playlist .idx, .assignment-dl a { font-family: var(--font-mono), var(--font-body), monospace; }
+
+/* כותרות קטנות בסגנון מסוף: "*** טקסט ***" */
+.eyebrow { letter-spacing: 0.12em; color: var(--ink-2); text-transform: uppercase; }
+.eyebrow::before { content: "*** "; color: var(--accent-3); }
+.eyebrow::after { content: " ***"; color: var(--accent-3); }
+.eyebrow b { display: none; }
+
+/* סרגל עליון — שורת כותרת של מסך */
+.bar { background: color-mix(in srgb, var(--bg-0) 92%, transparent); backdrop-filter: none; border-block-end: 1px solid var(--line-1); }
+.brand .sig { border-radius: 0; background: var(--accent); color: var(--on-accent); box-shadow: 0 0 14px -2px var(--glow); }
+.brand b { font-family: var(--font-mono), var(--font-body), monospace; letter-spacing: 0.04em; }
+.bar nav a::after { block-size: 2px; }
+.kbtn { border-radius: var(--r-1); }
+.kbtn:hover { transform: none; background: var(--glass-2); }
+
+/* כפתורים — מלבנים ישרים, כמו מקשי פונקציה */
+.btn { border-radius: var(--r-1); letter-spacing: 0.02em; }
+.btn-1 { background: var(--accent); color: var(--on-accent); box-shadow: 0 0 22px -6px var(--glow); border-color: var(--accent); }
+.btn-1:hover { transform: none; background: transparent; color: var(--accent); box-shadow: 0 0 28px -4px var(--glow); }
+.btn-2 { background: transparent; border-color: var(--line-2); color: var(--ink-0); }
+.btn-2:hover { transform: none; background: var(--glass-2); border-color: var(--accent); color: var(--accent); }
+.btn .shine { display: none; }
+
+/* HERO */
+.hero-glow { background: radial-gradient(60% 55% at 80% 20%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%); }
+.hero h1 { font-weight: 700; color: var(--ink-0); }
+.hero h1 em { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--accent); text-shadow: 0 0 22px var(--glow), 0 0 2px var(--glow); }
+/* סמן מהבהב בסוף הכותרת — כמו מסוף שמחכה לקלט */
+.hero h1::after {
+  content: ""; display: inline-block; inline-size: 0.42em; block-size: 0.82em; margin-inline-start: 0.12em;
+  background: var(--accent); vertical-align: -0.06em; box-shadow: 0 0 16px var(--glow);
+  animation: blink 1.05s steps(2) infinite;
+}
+.lede b { color: var(--accent); font-weight: 600; }
+.counts dd { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--accent); font-family: var(--font-mono), monospace; font-weight: 600; text-shadow: 0 0 14px var(--glow); }
+.counts dt { font-family: var(--font-mono), var(--font-body), monospace; letter-spacing: 0.06em; }
+
+/* חלון הקוד — מסוף 3270 */
+.console { border-radius: var(--r-3); background: var(--bg-1); backdrop-filter: none; border-color: var(--line-2); box-shadow: 0 0 0 1px var(--line-0), 0 0 60px -20px var(--glow); }
+.console::before { display: none; }
+.c-head { background: var(--accent); color: var(--on-accent); border-block-end: 0; }
+.c-head .c-title { color: var(--on-accent); font-weight: 600; }
+.c-dots i { border-radius: 0; background: var(--on-accent) !important; opacity: 0.55; }
+.c-status { border-radius: 0; background: var(--on-accent); color: var(--accent); }
+.term { border-radius: 0; background: var(--term-bg); border-color: var(--line-1); text-shadow: 0 0 6px rgba(57, 255, 110, 0.55); }
+.term .kw { color: #39ff6e; }
+.term .div { color: #ffb000; text-shadow: 0 0 6px rgba(255, 176, 0, 0.55); }
+.term .str { color: #e8ffe9; }
+.term .num { color: #7dffa8; }
+.term .ind, .term .ruler span:nth-child(2) { color: #ffb000; }
+.term .cur { background: #39ff6e; }
+.c-foot span { border-radius: 0; }
+
+/* פס מילות המפתח */
+.marq { background: var(--bg-1); border-color: var(--line-1); }
+.marq span { color: var(--ink-1); }
+.marq span::after { content: "■"; color: var(--accent-3); }
+
+/* קטעים */
+.band.alt { background: var(--bg-1); border-color: var(--line-0); }
+.band + .band::before { background: none; border-block-start: 1px dashed var(--line-2); block-size: 0; }
+
+/* שיעורים, כרטיסים ותיבות — מסגרות ישרות, פס ירוק בצד */
+.lesson, .card, .cta-box, .side-block, .app-only, .assignment-open, .playlist button, .nav-btn, .viewer, .screen, .next-card { border-radius: var(--r-3); }
+.lesson { background: var(--bg-1); border-color: var(--line-1); border-inline-start: 3px solid var(--line-2); }
+.lesson:hover { transform: none; border-color: var(--line-2); border-inline-start-color: var(--accent); background: var(--bg-2); }
+.lesson .no { color: var(--accent); text-shadow: 0 0 12px var(--glow); }
+.lesson.intro .no { color: var(--accent-3); }
+.chips li { border-radius: 0; background: transparent; border-color: var(--line-1); color: var(--ink-1); }
+.card { background: var(--bg-1); border-color: var(--line-1); box-shadow: none; border-block-start: 3px solid var(--h, var(--accent)); }
+.card .ic { border-radius: 0; }
+.card:nth-child(1) { --h: var(--c1) !important; }
+.card:nth-child(2) { --h: var(--c3) !important; }
+.card:nth-child(3) { --h: var(--c2) !important; }
+.cta-box { background: var(--bg-1); border: 1px solid var(--line-2); box-shadow: 0 0 60px -24px var(--glow); }
+.cta-box::before { background: repeating-linear-gradient(to bottom, transparent 0 22px, var(--glass) 22px 44px); }
+.foot { border-color: var(--line-1); }
+
+/* דף שיעור */
+.head .lesson-badge { border-radius: var(--r-1); background: var(--accent); color: var(--on-accent); box-shadow: 0 0 22px -6px var(--glow); font-family: var(--font-mono), var(--font-body), monospace; }
+.side-block { background: var(--bg-1); border-color: var(--line-1); backdrop-filter: none; }
+.side-title { color: var(--ink-1); text-transform: uppercase; letter-spacing: 0.04em; border-block-end: 1px dashed var(--line-1); padding-block-end: 0.45rem; }
+.playlist button[aria-current="true"] { background: var(--glass-2); border-color: var(--accent); }
+.playlist .idx { border-radius: 0; }
+.playlist button[aria-current="true"] .idx { background: var(--accent); box-shadow: 0 0 12px -2px var(--glow); }
+.assignment-open .ic, .app-only .ic { border-radius: 0; }
+.assignment-open .cta { border-radius: var(--r-1); background: var(--accent); }
+.assignment-dl a, .fp-dl a { border-radius: var(--r-1); }
+.nav-btn.next { background: var(--accent); color: var(--on-accent); box-shadow: 0 0 22px -8px var(--glow); }
+.nav-btn.next:hover, .nav-btn.prev:hover { transform: none; }
+.screen { border-color: var(--line-2); box-shadow: 0 0 0 1px var(--line-0), 0 0 50px -20px var(--glow); }
+
+/* מסך סיום הסרטון */
+.endscreen { background: rgba(0, 6, 2, 0.88); backdrop-filter: none; }
+.next-card { border-color: var(--line-2); background: rgba(57, 255, 110, 0.05); }
+a.next-card:hover, button.next-card:hover { transform: none; border-color: #39ff6e; background: rgba(57, 255, 110, 0.1); }
+.next-play { border-radius: 0; background: #39ff6e; color: #021004; box-shadow: 0 0 24px -4px rgba(57, 255, 110, 0.6); }
+.next-play.counting::before { border-radius: 0; }
+.end-actions a, .end-actions button { border-radius: 2px; }
+.play-flash { border-radius: 0; }
+
+/* פרויקט הסיום — בצבע ענבר, מסגרת כפולה שמרנית */
+.final-project {
+  background: var(--bg-1);
+  border: 3px double var(--accent-3);
+  box-shadow: 0 0 50px -20px color-mix(in srgb, var(--accent-3) 60%, transparent);
+}
+.final-project::before { display: none; }
+.fp-badge { border-radius: 0; background: var(--accent-3); color: #1a0f00; }
+.fp-trophy { border-radius: 0; background: var(--accent-3); color: #1a0f00; box-shadow: 0 0 24px -6px var(--accent-3); }
+.final-project h2 { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--accent-3); text-shadow: 0 0 18px color-mix(in srgb, var(--accent-3) 55%, transparent); }
+.fp-open { border-radius: var(--r-1); background: var(--accent-3); color: #1a0f00; box-shadow: 0 0 22px -6px var(--accent-3); }
+.fp-open:hover { transform: none; }
+.fp-open .shine { display: none; }
+.fp-dl a { border-color: color-mix(in srgb, var(--accent-3) 50%, transparent); }
+.fp-dl a:hover { color: var(--accent-3); border-color: var(--accent-3); }
+
+/* חלון המשימה */
+.viewer { border-color: var(--line-2); background: var(--bg-1); }
+.viewer-tabs, .viewer-tabs button { border-radius: 0; }
+.viewer-close { border-radius: 0; }
+
+/* מצב בהיר: נייר green-bar — פסים ירקרקים חלופיים כמו בהדפסות ישנות */
+:root[data-theme="light"] body { background: repeating-linear-gradient(to bottom, var(--bg-0) 0 48px, var(--bg-1) 48px 96px); background-attachment: scroll; }
+:root[data-theme="light"] h1, :root[data-theme="light"] h2, :root[data-theme="light"] .hero h1 em { text-shadow: none; }
+
+/* ══════════════════════════════════════════════════════════
+   כתב של מסך COBOL (SEU / 5250): גופן מסוף אחיד בכל האתר, בלי זוהר
+   ══════════════════════════════════════════════════════════ */
+:root { --font-term: var(--font-mono), "Courier New", Courier, var(--font-body), monospace; }
+body, h1, h2, h3, .lesson .meta, .card h3, .viewer-bar h2, .side-title, .btn, .kbtn, .nav-btn, .playlist button,
+.assignment-open, .fp-open, .next-card, .head .lesson-badge, .brand b, .counts dd, .counts dt, .lede, .eyebrow {
+  font-family: var(--font-term);
+}
+h1, h2, h3, .hero h1 em, .counts dd, .lesson .no, .final-project h2 { text-shadow: none; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.01em; }
+.hero h1 { font-size: clamp(2.2rem, 6.4vw, 5rem); line-height: 1.12; }
+.lede, .head p, .lesson p, .card p, .cta-box p { font-weight: 400; }
+body { line-height: 1.65; }
+.hero h1::after { box-shadow: none; }
+.btn-1, .head .lesson-badge, .nav-btn.next, .brand .sig, .playlist button[aria-current="true"] .idx { box-shadow: none; }
+.screen { box-shadow: 0 0 0 1px var(--line-0); }
+.cta-box { box-shadow: none; }
+.final-project { box-shadow: none; }
+/* קו מפריד דק בירוק — כמו הקו מתחת לשורת הפקודה במסך העריכה */
+.bar { border-block-end: 1px solid var(--accent); }
+
+/* ══════════════════════════════════════════════════════════
+   "בתוך מסך העריכה": שחור מלא, ירוק רגוע, בלי קווי סריקה וזוהר
+   ══════════════════════════════════════════════════════════ */
+:root:not([data-theme="light"]) body { background: #000; }
+:root:not([data-theme="light"]) .veil { display: none; }
+.hero-glow { display: none; }
+.term { text-shadow: none; }
+.term .kw { color: #36b83c; }
+.term .num { color: #3ec944; }
+.term .str { color: #dfe4e2; }
+.term .div, .term .ind { color: #e3c34a; text-shadow: none; }
+
+/* סרגל עמודות מתחת לסרגל העליון — כמו בשורת FMT של SEU */
+.bar::after {
+  content: "FMT CB .....-A+++B++++++++++++++++++++++++++++++++++++++++++++++++++++++++Pgm-id++ ...+... 9 ...+... 0";
+  display: block; overflow: hidden; white-space: nowrap; direction: ltr; text-align: left;
+  padding: 0.15rem var(--pad); border-block-start: 1px solid var(--line-0);
+  font-family: var(--font-mono), monospace; font-size: 0.6875rem; letter-spacing: 0.02em;
+  color: var(--ink-2); background: var(--bg-0);
+}
+:root[data-theme="light"] .bar::after { color: var(--ink-3); }
+section { scroll-margin-block-start: 100px; }
+
+/* מספרי שורות בשוליים (קישוט) — רק כשיש מקום בצד */
+.seu-gutter { display: none; }
+@media (min-width: 1440px) {
+  body { position: relative; }
+  .seu-gutter {
+    position: absolute; inset-block-start: 0; left: 0; z-index: 0; pointer-events: none; user-select: none;
+    display: grid; padding: 7.2rem 0 0 0.9rem; direction: ltr; overflow: hidden; max-block-size: 100%;
+    font-family: var(--font-mono), monospace; font-size: 0.75rem; line-height: 1.65rem; color: var(--line-2);
+  }
+  :root[data-theme="light"] .seu-gutter { color: var(--line-1); }
+}
+
+/* סרגל עליון בטלפון — הגופן המונוספייס רחב יותר, אז מצמצמים */
+@media (max-width: 520px) {
+  .brand span:not(.sig) { display: none; }
+  .bar-in { gap: 0.5rem; }
+  .tools { gap: 0.3rem; }
+  .kbtn { padding-inline: 0.55rem; font-size: 0.75rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ירוק ושחור בלבד + גופן מסוף אחד (Miriam Mono) לעברית ולאנגלית
+   ══════════════════════════════════════════════════════════ */
+:root { --font-term: var(--font-mono), "Courier New", monospace; --font-body: var(--font-mono); }
+body, button, input { font-family: var(--font-term); }
+.marq { display: none; }
+/* מה שהיה צהוב/ענבר — עכשיו ירוק */
+.final-project { border-color: var(--accent); }
+.fp-badge, .fp-trophy, .fp-open { background: var(--accent); color: #000; }
+.fp-trophy { box-shadow: none; }
+.fp-open { box-shadow: none; }
+.final-project h2 { color: var(--ink-0); }
+.fp-dl a { border-color: var(--line-2); }
+.fp-dl a:hover { color: var(--accent); border-color: var(--accent); }
+/* מסך ההגנה — שחור וירוק במקום לבן */
+.shield { background: #000; color: var(--ink-0); }
+.shield span { color: var(--ink-2); }
+/* מסך הסיום של סרטון */
+.next-play { background: var(--accent); color: #000; box-shadow: none; }
+.next-card { border-color: var(--line-2); }
+a.next-card:hover, button.next-card:hover { border-color: var(--accent); }
+.next-label, .end-actions a, .end-actions button { color: var(--ink-1); }
+.next-title { color: var(--ink-0); }
+/* כותרות ראשיות בירוק הבהיר, גוף הטקסט בירוק */
+.hero h1, h1, h2, h3, .brand b { color: var(--ink-0); }
+/* הדגשה בסגנון מסוף: היפוך צבעים (טקסט שחור על ירוק) */
+/* המילה COBOL בכותרת — הדגשה זורחת (גרסה בהירה של אותו ירוק) */
+.hero h1 em { color: #000; background: #1ee86a; padding-inline: 0.12em; box-shadow: 0 0 28px -4px rgba(30, 232, 106, 0.7); }
+
+.side { overflow-x: hidden; }
+
+/* פרויקט הסיום — כתב גדול יותר */
+.final-project h2 { font-size: clamp(1.7rem, 2.6vw, 2.3rem); }
+.final-project p { font-size: var(--t-0); line-height: 1.6; }
+.fp-badge { font-size: var(--t--1); padding: 0.25rem 0.85rem; }
+.fp-open { font-size: var(--t-1); min-block-size: 50px; }
+.fp-dl a { font-size: var(--t--1); }
+
+/* עמודת הצד: שם ארוך נחתך ב-"…" במקום למתוח את העמודה; ריווח מעט צפוף יותר כדי שתיכנס בגובה הסרטון */
+.side-block, .assignments ul, .assignment { grid-template-columns: minmax(0, 1fr); }
+.side { gap: 0.8rem; }
+.side-block { padding: 0.65rem 0.7rem; gap: 0.4rem; }
+.playlist { gap: 0.2rem; }
+.playlist button { min-block-size: 38px; padding-block: 0.3rem; }
+.assignment-open { min-block-size: 44px; padding-block: 0.35rem; }
+.nav-btn { min-block-size: 50px; }
+
+/* כותרות קטנות ("*** … ***") ותוויות המונים — כתב גדול יותר */
+.eyebrow { font-size: var(--t-0); letter-spacing: 0.06em; }
+.counts dt { font-size: var(--t-0); }
+
+/* צבע אחד בלבד: #0b903c (חוץ מהמילה COBOL בכותרת). כל שאריות של צבעים קודמים — לירוק הזה */
+:root:not([data-theme="light"]) {
+  --term-ink: #0b903c;
+}
+.next-card, a.next-card:hover, button.next-card:hover, .end-actions a, .end-actions button, .end-actions a:hover, .end-actions button:hover { border-color: var(--accent); }
+.next-card, .next-label, .next-title, .end-actions a, .end-actions button, .play-flash { color: var(--accent); }
+.play-flash { background: #000; border: 1px solid var(--accent); }
+.endscreen { background: rgba(0, 0, 0, 0.9); }
+.next-play, .fp-badge, .fp-trophy, .fp-open, .btn-1, .head .lesson-badge, .nav-btn.next, .assignment-open .cta,
+.playlist button[aria-current="true"] .idx, .brand .sig, .skip-link { background: var(--accent); color: #000; }
+.watermark { color: var(--accent); }
+
+/* מספרי השורות בשוליים וסרגל העמודות — כתב גדול יותר */
+.bar::after { font-size: 0.9375rem; padding-block: 0.25rem; }
+@media (min-width: 1440px) {
+  .seu-gutter { font-size: 1rem; line-height: 1.9rem; padding-inline-start: 0; padding-left: 0.8rem; }
+}
+
+/* מסכים נמוכים (לפטופ קטן): רשימת הסרטונים צפופה מעט יותר, כדי שעמודת הצד תיכנס בגובה הסרטון */
+@media (min-width: 960px) and (max-height: 800px) {
+  .playlist button { min-block-size: 34px; padding-block: 0.2rem; }
+  .side-block { padding-block: 0.55rem; }
+}
