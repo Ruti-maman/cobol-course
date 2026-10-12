@@ -2,6 +2,7 @@
 /content-source/
 /content-processed/
 /content-enhanced/
+/content-compressed/
 /audio-samples/
 
 .env

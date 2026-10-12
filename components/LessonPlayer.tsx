@@ -174,6 +174,45 @@ export function LessonPlayer({
     };
   }, [storageKey]);
 
+  // באתר החי הסרטון מגיע בקישור זמני. אם הוא פג באמצע צפייה ארוכה (או שהרשת נפלה לרגע) —
+  // מבקשים קישור חדש בשקט וממשיכים מאותה שנייה, בלי שהלומדת תרגיש.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !video) return;
+    let retries = 0;
+    let wasPlaying = false;
+    const onPlaying = () => {
+      wasPlaying = true;
+      retries = 0;
+    };
+    const onPause = () => {
+      if (!el.error) wasPlaying = false;
+    };
+    const onError = () => {
+      if (retries >= 3) return;
+      retries++;
+      const at = el.currentTime;
+      const resume = wasPlaying;
+      el.addEventListener(
+        "loadedmetadata",
+        () => {
+          if (at > 0) el.currentTime = at;
+          if (resume) void el.play().catch(() => {});
+        },
+        { once: true },
+      );
+      el.src = `${video.src}${video.src.includes("?") ? "&" : "?"}r=${Date.now()}`;
+    };
+    el.addEventListener("playing", onPlaying);
+    el.addEventListener("pause", onPause);
+    el.addEventListener("error", onError);
+    return () => {
+      el.removeEventListener("playing", onPlaying);
+      el.removeEventListener("pause", onPause);
+      el.removeEventListener("error", onError);
+    };
+  }, [video]);
+
   const goTo = useCallback((index: number, autoplay: boolean) => {
     autoplayRef.current = autoplay;
     setEnded(false);

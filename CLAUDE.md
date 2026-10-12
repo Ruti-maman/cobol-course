@@ -232,6 +232,11 @@ npm test           # בדיקות
 | `CONTENT_DIR` | תיקיית קובצי הקורס (סרטונים ומטלות) | `content-source` |
 | `PROCESSED_DIR` | גרסאות מעובדות (faststart), מועדפות על המקור | `content-processed` |
 | `REQUIRE_APP` | `1` = סרטונים רק באפליקציית הצפייה (desktop/) | כבוי |
+| `MEDIA_SOURCE` | `supabase` = סרטונים ומטלות מהאחסון הפרטי ב-Supabase (קישור חתום וזמני); `local` = מהתיקיות במחשב | `local` |
+| `SUPABASE_SECRET_KEY` | מפתח סודי — רק בשרת ובסקריפט ההעלאה | — |
+| `DEV_SKIP_ACCESS` | `1` = צפייה בלי התחברות, **רק** ב-`npm run dev` (באתר החי לא פועל) | כבוי |
+
+- העלאת קבצים לאחסון: `node scripts/compress-large.mjs` (סרטונים מעל 50MB) ואז `node --env-file=.env.local scripts/upload-media.mjs`.
 
 - קובצי הקורס לא נארזים לעולם לתוך קוד השרת (`outputFileTracingExcludes` ב-next.config.ts).
 - `.npmrc` מגדיר `--use-system-ca` — בלי זה הבנייה נכשלת מאחורי נטפרי (הורדת גופנים).

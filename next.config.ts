@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // קובצי הקורס לעולם לא נארזים לתוך קוד השרת (CLAUDE.md סעיף 6.4) — הם נקראים בזמן ריצה מהאחסון.
   outputFileTracingExcludes: {
-    "/*": ["./content-source/**/*", "./content-processed/**/*", "./content-enhanced/**/*", "./audio-samples/**/*", "./desktop/**/*", "./scripts/**/*"],
+    "/*": ["./content-source/**/*", "./content-processed/**/*", "./content-enhanced/**/*", "./content-compressed/**/*","./audio-samples/**/*", "./desktop/**/*", "./scripts/**/*"],
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
