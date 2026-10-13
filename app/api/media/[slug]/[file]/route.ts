@@ -5,7 +5,6 @@ import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
 import { getPublishedLesson, type Lesson } from "@/lib/course";
 import { mediaSource, readStoredFile, resolveMediaFile, signedMediaUrl } from "@/lib/media-storage";
-import { clampVideoRange } from "@/lib/video-range";
 
 // הגשת קובצי שיעור (סרטונים ומטלות). זהה במחשב ובאתר החי — ראו lib/media-storage.ts.
 // כל קובץ מוגש רק אחרי התחברות + זכאות לשיעור הספציפי (CLAUDE.md סעיף 6.1).
@@ -63,35 +62,8 @@ function notFound() {
   return new Response("Not found", { status: 404 });
 }
 
-/**
- * סרטונים מוגשים מכתובת האתר עצמו, בחתיכות: כל בקשת Range מקבלת עד CHUNK בתים.
- * כך אין לנגן קישור ישיר לאחסון שאפשר להעתיק, כל חתיכה עוברת בדיקת זכאות,
- * וכל בקשה לשרת קצרה (לא נחתכת במגבלת הזמן של Vercel).
- */
-/** הקישור הפנימי לאחסון — השרת משתמש בו מיד, הוא לא יוצא לדפדפן */
-const UPSTREAM_LINK_SECONDS = 60;
-
-async function streamVideo(request: Request, lesson: Lesson, file: string) {
-  const range = clampVideoRange(request.headers.get("range"));
-  if (!range) return new Response(null, { status: 416 });
-  const url = await signedMediaUrl(lesson, file, { expiresIn: UPSTREAM_LINK_SECONDS });
-  if (!url) return notFound();
-
-  const upstream = await fetch(url, { headers: { Range: `bytes=${range.start}-${range.end}` } });
-  if (upstream.status === 416) return new Response(null, { status: 416 });
-  if (!upstream.ok || !upstream.body) return notFound();
-
-  const headers = new Headers({
-    "Content-Type": "video/mp4",
-    "Accept-Ranges": "bytes",
-    "Cache-Control": "private, no-store",
-  });
-  for (const name of ["Content-Range", "Content-Length"]) {
-    const value = upstream.headers.get(name);
-    if (value) headers.set(name, value);
-  }
-  return new Response(upstream.body, { status: upstream.status === 206 ? 206 : 200, headers });
-}
+/** תוקף הקישור הזמני לסרטון — מספיק לצפייה רצופה (הנגן מחדש אותו לבד אם פג). */
+const VIDEO_LINK_SECONDS = 2 * 60 * 60;
 
 /** אתר חי: הקבצים באחסון פרטי ב-Supabase. נקרא רק אחרי בדיקת הזכאות שלמעלה. */
 async function serveFromStorage(request: Request, lesson: Lesson, file: string) {
@@ -117,7 +89,9 @@ async function serveFromStorage(request: Request, lesson: Lesson, file: string) 
     });
   }
 
-  return streamVideo(request, lesson, file);
+  const url = await signedMediaUrl(lesson, file, { expiresIn: VIDEO_LINK_SECONDS });
+  if (!url) return notFound();
+  return new Response(null, { status: 302, headers: { Location: url, "Cache-Control": "private, no-store" } });
 }
 
 export async function GET(request: Request, ctx: RouteContext<"/api/media/[slug]/[file]">) {
