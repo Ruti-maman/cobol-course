@@ -7,7 +7,8 @@ const path = require("node:path");
 const { app, BrowserWindow, Menu, ipcMain, shell, session } = require("electron");
 const { findRunningRecorders } = require("./recorders");
 
-const START_URL = process.env.COURSE_URL || "http://localhost:3000";
+// האתר החי. בפיתוח: COURSE_URL=http://localhost:3000 npm start
+const START_URL = process.env.COURSE_URL || "https://cobol-course.vercel.app";
 const allowedOrigin = new URL(START_URL).origin;
 
 // קישורים מהאתר בצורה cobolcourse://lessons/<slug> פותחים את האפליקציה על אותו דף.

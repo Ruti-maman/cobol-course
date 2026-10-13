@@ -3,11 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "description": "אפליקציית הצפייה של קורס COBOL — חוסמת צילום והקלטת מסך",
+  "author": "COBOL Course",
   "main": "main.js",
   "scripts": {
-    "start": "set ELECTRON_RUN_AS_NODE=&& electron ."
+    "start": "set ELECTRON_RUN_AS_NODE=&& electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "online.cobolcourse.viewer",
+    "productName": "CobolCourse",
+    "files": ["main.js", "preload.js", "recorders.js", "package.json"],
+    "directories": { "output": "dist" },
+    "protocols": [{ "name": "COBOL Course", "schemes": ["cobolcourse"] }],
+    "win": { "target": "nsis" },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "CobolCourse-Setup.${ext}",
+      "shortcutName": "קורס COBOL"
+    }
   },
   "devDependencies": {
-    "electron": "^44.7.0"
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
   }
 }

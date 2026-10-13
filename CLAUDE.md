@@ -234,6 +234,7 @@ npm test           # בדיקות
 | `REQUIRE_APP` | `1` = סרטונים רק באפליקציית הצפייה (desktop/) | כבוי |
 | `MEDIA_SOURCE` | `supabase` = סרטונים ומטלות מהאחסון הפרטי ב-Supabase (קישור חתום וזמני); `local` = מהתיקיות במחשב | `local` |
 | `SUPABASE_SECRET_KEY` | מפתח סודי — רק בשרת ובסקריפט ההעלאה | — |
+| `REVIEW_SECRET` | סוד לקישורי בדיקה זמניים (למשל לנטפרי): `node --env-file=.env.local scripts/review-link.mjs 14`. להחליף = לבטל את כל הקישורים | — |
 | `DEV_SKIP_ACCESS` | `1` = צפייה בלי התחברות, **רק** ב-`npm run dev` (באתר החי לא פועל) | כבוי |
 
 - העלאת קבצים לאחסון: `node scripts/compress-large.mjs` (סרטונים מעל 50MB) ואז `node --env-file=.env.local scripts/upload-media.mjs`.
