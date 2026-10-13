@@ -4,7 +4,7 @@ import path from "node:path";
 import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
 import { getPublishedLesson, type Lesson } from "@/lib/course";
-import { mediaSource, resolveMediaFile, signedMediaUrl } from "@/lib/media-storage";
+import { mediaSource, readStoredFile, resolveMediaFile, signedMediaUrl } from "@/lib/media-storage";
 
 // הגשת קובצי שיעור (סרטונים ומטלות). זהה במחשב ובאתר החי — ראו lib/media-storage.ts.
 // כל קובץ מוגש רק אחרי התחברות + זכאות לשיעור הספציפי (CLAUDE.md סעיף 6.1).
@@ -62,21 +62,34 @@ function notFound() {
   return new Response("Not found", { status: 404 });
 }
 
-/** תוקף הקישור הזמני: לסרטון — מספיק לצפייה רצופה (הנגן מחדש אותו לבד אם פג); למטלה — דקה. */
+/** תוקף הקישור הזמני לסרטון — מספיק לצפייה רצופה (הנגן מחדש אותו לבד אם פג). */
 const VIDEO_LINK_SECONDS = 2 * 60 * 60;
-const FILE_LINK_SECONDS = 60;
 
-/** אתר חי: הקבצים באחסון פרטי ב-Supabase — מפנים לקישור חתום וזמני, אחרי בדיקת הזכאות שלמעלה. */
-async function redirectToStorage(request: Request, lesson: Lesson, file: string) {
+/** אתר חי: הקבצים באחסון פרטי ב-Supabase. נקרא רק אחרי בדיקת הזכאות שלמעלה. */
+async function serveFromStorage(request: Request, lesson: Lesson, file: string) {
   const isVideo = path.extname(file).toLowerCase() === ".mp4";
   if (isVideo && !mayStreamVideo(request.headers.get("user-agent"))) {
     return new Response("Videos are available in the course app only", { status: 403 });
   }
   const view = new URL(request.url).searchParams.get("view") === "1";
-  const url = await signedMediaUrl(lesson, file, {
-    expiresIn: isVideo ? VIDEO_LINK_SECONDS : FILE_LINK_SECONDS,
-    download: isVideo || view ? undefined : file,
-  });
+
+  // מטלות קטנות — מוגשות מכתובת האתר עצמו (לא הפניה לאחסון), כדי שיעבדו גם ברשתות מסוננות.
+  if (!isVideo) {
+    const blob = await readStoredFile(lesson, file);
+    if (!blob) return notFound();
+    const ext = path.extname(file).toLowerCase();
+    return new Response(blob, {
+      status: 200,
+      headers: {
+        "Content-Type": contentTypes[ext] ?? "application/octet-stream",
+        "Content-Length": String(blob.size),
+        "Content-Disposition": `${view ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(file)}`,
+        "Cache-Control": "private, no-store",
+      },
+    });
+  }
+
+  const url = await signedMediaUrl(lesson, file, { expiresIn: VIDEO_LINK_SECONDS });
   if (!url) return notFound();
   return new Response(null, { status: 302, headers: { Location: url, "Cache-Control": "private, no-store" } });
 }
@@ -90,7 +103,7 @@ export async function GET(request: Request, ctx: RouteContext<"/api/media/[slug]
   if (access === "login") return new Response("Login required", { status: 401 });
   if (access !== "ok") return new Response("Forbidden", { status: 403 });
 
-  if (mediaSource === "supabase") return redirectToStorage(request, lesson, safeDecode(file));
+  if (mediaSource === "supabase") return serveFromStorage(request, lesson, safeDecode(file));
 
   const fullPath = (await resolveMediaFile(lesson, file)) ?? (await resolveMediaFile(lesson, safeDecode(file)));
   if (!fullPath) return notFound();

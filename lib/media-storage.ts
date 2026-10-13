@@ -100,6 +100,18 @@ export async function resolveMediaFile(lesson: Lesson, file: string): Promise<st
 }
 
 /**
+ * תוכן של קובץ קטן (מטלה) מהאחסון הפרטי — רק לקובץ שרשום לשיעור הזה.
+ * מוגש דרך כתובת האתר עצמו, כדי שיעבוד גם ברשתות מסוננות שאישרו רק את האתר.
+ */
+export async function readStoredFile(lesson: Lesson, file: string): Promise<Blob | undefined> {
+  const row = (await storedLessonFiles(lesson)).find((item) => item.file_name === file);
+  if (!row) return undefined;
+  const { data, error } = await createSupabaseAdminClient().storage.from(MEDIA_BUCKET).download(row.storage_key);
+  if (error || !data) return undefined;
+  return data;
+}
+
+/**
  * קישור חתום וזמני לקובץ באחסון הפרטי — רק לקובץ שרשום לשיעור הזה.
  * download — שם הקובץ להורדה; בלי — להצגה בתוך הדף (נגן / PDF).
  */
