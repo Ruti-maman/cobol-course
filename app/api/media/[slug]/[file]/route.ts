@@ -5,6 +5,7 @@ import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
 import { getPublishedLesson, type Lesson } from "@/lib/course";
 import { mediaSource, readStoredFile, resolveMediaFile, signedMediaUrl } from "@/lib/media-storage";
+import { isPublicVideoWindow } from "@/lib/public-video";
 import { clampVideoRange } from "@/lib/video-range";
 
 // הגשת קובצי שיעור (סרטונים ומטלות). זהה במחשב ובאתר החי — ראו lib/media-storage.ts.
@@ -125,9 +126,14 @@ export async function GET(request: Request, ctx: RouteContext<"/api/media/[slug]
   const lesson = getPublishedLesson(slug);
   if (!lesson) return notFound();
 
-  const access = await getLessonAccess(lesson.slug);
-  if (access === "login") return new Response("Login required", { status: 401 });
-  if (access !== "ok") return new Response("Forbidden", { status: 403 });
+  // חלון זמני לבדיקת סינון (lib/public-video.ts): רק סרטונים פתוחים בלי התחברות, עד התאריך שנקבע.
+  const isVideo = path.extname(safeDecode(file)).toLowerCase() === ".mp4";
+  const publicVideo = isVideo && isPublicVideoWindow(process.env.PUBLIC_VIDEO_UNTIL);
+  if (!publicVideo) {
+    const access = await getLessonAccess(lesson.slug);
+    if (access === "login") return new Response("Login required", { status: 401 });
+    if (access !== "ok") return new Response("Forbidden", { status: 403 });
+  }
 
   if (mediaSource === "supabase") return serveFromStorage(request, lesson, safeDecode(file));
 
