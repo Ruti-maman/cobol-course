@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Heebo } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -10,6 +11,14 @@ const term = localFont({
     { path: "./fonts/miriam-mono-bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-mono",
+  display: "swap",
+});
+
+// גופן עברי מודרני לטקסט הרגיל; המונוספייס נשאר לקוד, לתוויות ולמספרים (רענון 2026).
+const sans = Heebo({
+  subsets: ["hebrew", "latin"],
+  weight: ["400", "500", "700", "800"],
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -34,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="he"
       dir="rtl"
       suppressHydrationWarning
-      className={term.variable}
+      className={`${term.variable} ${sans.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
