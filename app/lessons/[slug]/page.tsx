@@ -49,11 +49,15 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   for (const a of assignments) {
     grouped.set(a.title, [...(grouped.get(a.title) ?? []), { format: a.format, src: media(a.file) }]);
   }
+  // כשיש PDF — מציגים רק אותו (קובצי Word נחסמים ברשתות מסוננות). Word מוצג רק אם אין PDF למשימה.
+  const preferPdf = (files: { format: string; src: string }[]) =>
+    files.some((f) => f.format === "PDF") ? files.filter((f) => f.format !== "DOCX") : files;
   // פרויקט הסיום מזוהה לפי שם הקובץ ("final project" / "פרויקט סיום") — לא לפי מספר שיעור קבוע.
   const isFinal = (title: string) => /final\s*project|פרויקט\s*סיום/i.test(title);
-  const assignmentList = [...grouped].map(([title, files]) =>
-    isFinal(title) ? { title: "פרויקט הסיום", files, final: true } : { title, files },
-  );
+  const assignmentList = [...grouped].map(([title, all]) => {
+    const files = preferPdf(all);
+    return isFinal(title) ? { title: "פרויקט הסיום", files, final: true } : { title, files };
+  });
 
   return (
     <>
