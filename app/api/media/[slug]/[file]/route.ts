@@ -73,12 +73,15 @@ function notFound() {
 const UPSTREAM_LINK_SECONDS = 60;
 
 async function streamVideo(request: Request, lesson: Lesson, file: string) {
-  const range = clampVideoRange(request.headers.get("range"));
-  if (!range) return new Response(null, { status: 416 });
+  const rangeHeader = request.headers.get("range");
+  // בלי Range (הורדה רגילה, למשל מערכת בדיקה של סינון) — הקובץ השלם, כמו קובץ סטטי.
+  // עם Range (הנגן) — חתיכה אחת לכל בקשה, כדי שכל בקשה תהיה קצרה.
+  const range = rangeHeader ? clampVideoRange(rangeHeader) : undefined;
+  if (rangeHeader && !range) return new Response(null, { status: 416 });
   const url = await signedMediaUrl(lesson, file, { expiresIn: UPSTREAM_LINK_SECONDS });
   if (!url) return notFound();
 
-  const upstream = await fetch(url, { headers: { Range: `bytes=${range.start}-${range.end}` } });
+  const upstream = await fetch(url, range ? { headers: { Range: `bytes=${range.start}-${range.end}` } } : undefined);
   if (upstream.status === 416) return new Response(null, { status: 416 });
   if (!upstream.ok || !upstream.body) return notFound();
 
