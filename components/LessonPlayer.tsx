@@ -174,8 +174,8 @@ export function LessonPlayer({
     };
   }, [storageKey]);
 
-  // באתר החי הסרטון מגיע בקישור זמני. אם הוא פג באמצע צפייה ארוכה (או שהרשת נפלה לרגע) —
-  // מבקשים קישור חדש בשקט וממשיכים מאותה שנייה, בלי שהלומדת תרגיש.
+  // אם הרשת נפלה לרגע באמצע צפייה — טוענים שוב בשקט וממשיכים מאותה שנייה, בלי שהלומדת תרגיש.
+  // תמיד אותה כתובת בדיוק (בלי תוספות): מערכות סינון מאשרות כל כתובת כפי שהיא.
   useEffect(() => {
     const el = ref.current;
     if (!el || !video) return;
@@ -201,7 +201,7 @@ export function LessonPlayer({
         },
         { once: true },
       );
-      el.src = `${video.src}${video.src.includes("?") ? "&" : "?"}r=${Date.now()}`;
+      el.load();
     };
     el.addEventListener("playing", onPlaying);
     el.addEventListener("pause", onPause);
