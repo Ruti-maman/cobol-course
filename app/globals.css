@@ -1201,3 +1201,11 @@ body { line-height: 1.7; }
 @media (prefers-reduced-motion: reduce) {
   .final-project, .final-project::after, .fp-trophy, .final-project h2::after, .fp-open .shine { animation: none !important; }
 }
+
+/* תגיות הנושאים — נוחות לקריאה: גופן נקי (Heebo), משקל בינוני, ריווח רגיל */
+.chips li {
+  font-family: var(--font-sans), "Segoe UI", system-ui, sans-serif;
+  font-weight: 500; font-size: 0.9375rem; letter-spacing: 0.01em; line-height: 1.45;
+  color: #e3f3e7; -webkit-text-stroke: 0;
+}
+:root[data-theme="light"] .chips li { color: var(--ink-0); }
