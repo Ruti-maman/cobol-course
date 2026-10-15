@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PicLab } from "@/components/PicLab";
+import { CourseProgress, LessonProgress } from "@/components/Progress";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getCourseStats, getPublishedLessons } from "@/lib/course";
@@ -65,6 +66,7 @@ export default function HomePage() {
                   <dd>{stats.assignments}</dd>
                 </div>
               </dl>
+              <CourseProgress lessons={lessons.map((l) => ({ slug: l.slug, videoCount: l.videoCount }))} />
               <div className="hero-cta">
                 <a className="btn btn-1" href="#lessons">
                   <span className="shine" />
@@ -103,6 +105,7 @@ export default function HomePage() {
                     <span className="meta">{countLabel(lesson.videoCount, nouns.video)}</span>
                   </h3>
                   <p>{lesson.summary}</p>
+                  <LessonProgress slug={lesson.slug} videoCount={lesson.videoCount} />
                   <ul className="chips ltr" aria-label="נושאים">
                     {lesson.topics.map((topic) => (
                       <li key={topic}>{topic}</li>

@@ -1323,3 +1323,22 @@ body { line-height: 1.7; }
 .lab-error { color: var(--ink-0); font-weight: 600; align-self: center; }
 .lab-field input { flex: 1 1 0; inline-size: 0; }
 @media (max-width: 520px) { .lab-prefix-long { display: none; } .lab-field { font-size: 1rem; } }
+
+/* ══════════════════════════════════════════════════════════
+   מעקב התקדמות
+   ══════════════════════════════════════════════════════════ */
+.progress-bar { position: relative; block-size: 8px; border-radius: 999px; background: rgba(11, 144, 60, 0.18); overflow: hidden; }
+.progress-bar i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: inherit; background: linear-gradient(90deg, #0b903c, #1ee86a); transition: inline-size 0.6s var(--ease); }
+.progress { display: grid; grid-template-columns: minmax(0, 220px) auto; align-items: center; gap: 0.7rem; margin-block-start: 0.5rem; }
+.progress span { font-size: 0.875rem; font-weight: 600; color: var(--ink-1); }
+.progress.complete span { color: #1ee86a; }
+:root[data-theme="light"] .progress.complete span { color: var(--accent); }
+.course-progress { display: grid; gap: 0.4rem; inline-size: min(100%, 420px); }
+.course-progress span { font-weight: 600; color: var(--ink-1); }
+.course-progress b { color: #1ee86a; font-size: 1.15em; }
+:root[data-theme="light"] .course-progress b { color: var(--accent); }
+.course-progress .progress-bar { block-size: 10px; }
+.playlist .idx { font-weight: 700; }
+/* מספר השיעור לאורך כל השורות בכרטיס (גם כשנוסף פס התקדמות) */
+.lesson .no { grid-row: span 4; }
+.lesson .progress { grid-column: 2; }

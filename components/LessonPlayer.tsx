@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCourseApp } from "@/lib/desktop-app";
 import { saveLastWatched } from "@/lib/last-watched";
+import { markWatched, videoKey } from "@/lib/progress";
+import { useWatched } from "./useWatched";
 import { applyPlaybackRate, loadPlaybackRate, savePlaybackRate } from "@/lib/playback-rate";
 
 type Video = { title: string; src: string };
@@ -98,6 +100,15 @@ function useWanderingPosition(intervalMs: number) {
   return pos;
 }
 
+/** קפיצה בתוך הסרטון (מחוץ לקומפוננטה — שינוי ישיר של אלמנט הווידאו). */
+function seekBy(el: HTMLVideoElement, seconds: number) {
+  const end = Number.isFinite(el.duration) ? el.duration : el.currentTime + seconds;
+  el.currentTime = Math.min(Math.max(0, el.currentTime + seconds), end);
+}
+function toggleMute(el: HTMLVideoElement) {
+  el.muted = !el.muted;
+}
+
 export function LessonPlayer({
   lessonSlug,
   videos,
@@ -136,6 +147,7 @@ export function LessonPlayer({
   const video = videos[current];
   const nextVideo = videos[current + 1];
   const storageKey = video ? `pos:${lessonSlug}:${video.src}` : "";
+  const watched = useWatched();
 
   // שמירת נקודת הצפייה בכל סרטון — "המשיכי מאיפה שעצרת".
   useEffect(() => {
@@ -155,6 +167,8 @@ export function LessonPlayer({
       } catch {}
       // הסרטון הזה הוא עכשיו "האחרון שנצפה" — לשם יחזרו מכפתור "המשיכי מאיפה שעצרת" ואחרי התחברות
       if (el.currentTime > 0) saveLastWatched({ slug: lessonSlug, index: current });
+      // צפייה ב-90% מהסרטון נחשבת "נצפה" (✓ ברשימה ופס התקדמות)
+      if (el.duration > 0 && el.currentTime / el.duration >= 0.9) markWatched(lessonSlug, current);
     };
     const autoplay = () => {
       if (autoplayRef.current) {
@@ -231,6 +245,7 @@ export function LessonPlayer({
     try {
       localStorage.removeItem(storageKey);
     } catch {}
+    markWatched(lessonSlug, current);
     setEnded(true);
     if (nextVideo) setCountdown(AUTOPLAY_SECONDS);
   }
@@ -256,16 +271,27 @@ export function LessonPlayer({
     }
   }
 
-  // מקש רווח עוצר וממשיך מכל מקום בדף (חוץ משדות טקסט וכפתורים).
+  // קיצורי מקלדת (מכל מקום בדף, חוץ משדות טקסט וכפתורים):
+  // רווח — עצירה/המשך · ‎← / →‎ — 10 שניות אחורה/קדימה · F — מסך מלא · M — השתקה.
+  // לפי המקש הפיזי (e.code), כך שזה עובד גם כשהמקלדת בעברית.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.code !== "Space" || e.repeat) return;
+      if (e.repeat && e.code !== "ArrowLeft" && e.code !== "ArrowRight") return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
-      if (t?.closest("input, textarea, select, button, a, [contenteditable]")) return;
-      // שלב ה-capture + stopPropagation: הנגן המובנה לא מקבל את הרווח, כדי שלא יפעיל אותו פעם שנייה.
+      if (t?.closest("input, textarea, select, button, a, [contenteditable], dialog")) return;
+      const el = ref.current;
+      if (!el) return;
+      const handled = new Set(["Space", "ArrowLeft", "ArrowRight", "KeyF", "KeyM"]);
+      if (!handled.has(e.code)) return;
+      // שלב ה-capture + stopPropagation: הנגן המובנה לא מקבל את המקש, כדי שלא יפעיל אותו פעם שנייה.
       e.preventDefault();
       e.stopPropagation();
-      togglePlay();
+      if (e.code === "Space") togglePlay();
+      else if (e.code === "ArrowRight") seekBy(el, 10);
+      else if (e.code === "ArrowLeft") seekBy(el, -10);
+      else if (e.code === "KeyF") toggleFullscreen();
+      else if (e.code === "KeyM") toggleMute(el);
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
@@ -421,7 +447,9 @@ export function LessonPlayer({
               <li key={v.src}>
                 <button type="button" aria-current={i === current ? "true" : undefined} onClick={() => goTo(i, true)}>
                   <span className="idx ltr" aria-hidden="true">
-                    {i === current ? (
+                    {i !== current && watched.has(videoKey(lessonSlug, i)) ? (
+                      "✓"
+                    ) : i === current ? (
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M7 4.5v15l12-7.5-12-7.5z" />
                       </svg>
