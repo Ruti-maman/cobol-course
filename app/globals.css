@@ -1252,3 +1252,13 @@ body { line-height: 1.7; }
 :root[data-theme="light"] .band.alt { background: var(--bg-0); }
 :root[data-theme="light"] .cta-box::before { background: none; }
 :root[data-theme="light"] .bar { background: color-mix(in srgb, var(--bg-0) 88%, transparent); }
+
+/* מספרי השורות בשוליים — נראים בבירור בשני המצבים */
+@media (min-width: 1440px) {
+  .seu-gutter { opacity: 1; color: rgba(11, 144, 60, 0.85); }
+  :root[data-theme="light"] .seu-gutter { color: rgba(11, 110, 46, 0.6); }
+}
+@media (min-width: 1440px) {
+  .seu-gutter { color: #15b04e; font-weight: 700; }
+  :root[data-theme="light"] .seu-gutter { color: #0b7a34; }
+}
