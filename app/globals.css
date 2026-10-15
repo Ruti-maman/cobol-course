@@ -1156,3 +1156,15 @@ body { line-height: 1.7; }
   font-size: var(--t-1); font-weight: 700; letter-spacing: 0.04em; color: var(--ink-0);
   -webkit-text-stroke: 0.4px currentColor; paint-order: stroke fill;
 }
+
+/* תגיות הנושאים — בולטות לעין: רקע ירוק עדין, מסגרת ירוקה ברורה, טקסט בהיר */
+.chips li {
+  background: rgba(11, 144, 60, 0.16);
+  border: 1px solid rgba(11, 144, 60, 0.75);
+  color: var(--ink-0);
+  font-weight: 700;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+.lesson:hover .chips li { background: rgba(11, 144, 60, 0.24); }
+:root[data-theme="light"] .chips li { background: rgba(11, 122, 52, 0.1); border-color: rgba(11, 122, 52, 0.6); }
