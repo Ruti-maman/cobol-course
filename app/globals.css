@@ -1262,3 +1262,12 @@ body { line-height: 1.7; }
   .seu-gutter { color: #15b04e; font-weight: 700; }
   :root[data-theme="light"] .seu-gutter { color: #0b7a34; }
 }
+
+/* קריאות: הכותרות הקטנות "*** … ***" ושם האתר — בגופן הנקי (Heebo), בלי עיבוי מלאכותי וריווח רגיל */
+.eyebrow, .head .eyebrow, .brand b {
+  font-family: var(--font-sans), "Segoe UI", system-ui, sans-serif;
+  -webkit-text-stroke: 0; letter-spacing: 0.01em;
+}
+.eyebrow, .head .eyebrow { font-weight: 700; font-size: 1.125rem; }
+.eyebrow::before, .eyebrow::after { font-family: var(--font-mono), monospace; letter-spacing: 0.05em; }
+.brand b { font-weight: 800; font-size: 1.25rem; }
