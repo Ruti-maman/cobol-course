@@ -15,7 +15,6 @@ export function SiteHeader({ wide = false }: { wide?: boolean }) {
         <nav aria-label="ניווט ראשי">
           <a href="#lessons">תוכנית הלימודים</a>
           <a href="#how">איך זה עובד</a>
-          <a href="#join">הרשמה</a>
         </nav>
         <div className="tools">
           <ThemeToggle />

@@ -63,11 +63,7 @@ export default function HomePage() {
                 </div>
               </dl>
               <div className="hero-cta">
-                <a className="btn btn-1" href="#join">
-                  <span className="shine" />
-                  להרשמה לקורס
-                </a>
-                <a className="btn btn-2" href="#lessons">
+                <a className="btn btn-1" href="#lessons">
                   <span className="shine" />
                   לתוכנית הלימודים
                 </a>
@@ -138,22 +134,6 @@ export default function HomePage() {
                   <p>{f.text}</p>
                 </article>
               ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="band" id="join" aria-labelledby="join-title">
-          <div className="wrap">
-            <div className="cta-box">
-              <p className="eyebrow">
-                <b>◆</b> הרשמה
-              </p>
-              <h2 id="join-title">מוכנה לכתוב את התכנית הראשונה שלך?</h2>
-              <p>פרטי המחיר וההרשמה יפורסמו כאן בקרוב.</p>
-              <a className="btn btn-1" href="#lessons">
-                <span className="shine" />
-                לתוכנית הלימודים
-              </a>
             </div>
           </div>
         </section>
