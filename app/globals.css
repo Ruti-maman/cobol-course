@@ -1342,3 +1342,6 @@ body { line-height: 1.7; }
 /* מספר השיעור לאורך כל השורות בכרטיס (גם כשנוסף פס התקדמות) */
 .lesson .no { grid-row: span 4; }
 .lesson .progress { grid-column: 2; }
+
+/* הלוגו CB בסרגל העליון — אותיות גדולות וברורות */
+.brand .sig { inline-size: 38px; block-size: 38px; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
