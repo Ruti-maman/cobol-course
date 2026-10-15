@@ -11,7 +11,6 @@ export function SiteHeader({ wide = false }: { wide?: boolean }) {
             CB
           </span>
           <b>קורס COBOL</b>
-          <span>/ דיגיטלי</span>
         </Link>
         <nav aria-label="ניווט ראשי">
           <a href="#lessons">תוכנית הלימודים</a>

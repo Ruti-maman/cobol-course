@@ -1093,8 +1093,10 @@ h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; }
 body { line-height: 1.7; }
 .eyebrow { font-size: var(--t--1); letter-spacing: 0.14em; color: var(--ink-2); }
 
-/* פחות קישוטי מסוף: בלי מספרי שורות; סרגל ה-FMT עדין */
-.seu-gutter { display: none !important; }
+/* קישוטי מסוף במינון עדין: מספרי שורות בשוליים (במסכים רחבים) וסרגל FMT — שקופים למחצה */
+@media (min-width: 1440px) {
+  .seu-gutter { opacity: 0.45; font-size: 0.875rem; line-height: 1.9rem; }
+}
 .bar::after { font-size: 0.6875rem; opacity: 0.5; padding-block: 0.15rem; border-block-start-color: var(--line-0); }
 .bar {
   border-block-end: 1px solid var(--line-1);
@@ -1122,3 +1124,11 @@ body { line-height: 1.7; }
 @media (prefers-reduced-motion: reduce) {
   .btn-1:hover, .btn-2:hover, .kbtn:hover { transform: none; }
 }
+
+/* סרגל עליון: כיתוב מודגש וברור (לא כבד מדי) */
+.bar nav a { font-weight: 700; color: var(--ink-0); letter-spacing: 0.01em; }
+.bar nav a:hover { color: var(--accent); }
+.kbtn { font-weight: 700; color: var(--ink-0); }
+
+/* שם האתר בסרגל העליון — עבה וברור */
+.brand b { font-weight: 700; font-size: 1.25rem; color: var(--ink-0); letter-spacing: 0.02em; -webkit-text-stroke: 0.6px currentColor; paint-order: stroke fill; }
