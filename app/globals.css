@@ -1271,3 +1271,8 @@ body { line-height: 1.7; }
 .eyebrow, .head .eyebrow { font-weight: 700; font-size: 1.125rem; }
 .eyebrow::before, .eyebrow::after { font-family: var(--font-mono), monospace; letter-spacing: 0.05em; }
 .brand b { font-weight: 800; font-size: 1.25rem; }
+
+/* "IDENTIFICATION DIVISION." בתחתית הדף — ברור וקריא */
+.foot .mono { color: #15b04e; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.04em; }
+:root[data-theme="light"] .foot .mono { color: #0b7a34; }
+.foot { color: var(--ink-1); }
