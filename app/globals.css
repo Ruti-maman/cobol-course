@@ -1132,3 +1132,10 @@ body { line-height: 1.7; }
 
 /* שם האתר בסרגל העליון — עבה וברור */
 .brand b { font-weight: 700; font-size: 1.25rem; color: var(--ink-0); letter-spacing: 0.02em; -webkit-text-stroke: 0.6px currentColor; paint-order: stroke fill; }
+
+/* כותרות קטנות "*** … ***" — מודגשות ובעלות נוכחות */
+.eyebrow {
+  font-size: var(--t-1); font-weight: 700; letter-spacing: 0.04em; color: var(--ink-0);
+  -webkit-text-stroke: 0.4px currentColor; paint-order: stroke fill;
+}
+.eyebrow::before, .eyebrow::after { color: var(--accent); font-weight: 700; }
