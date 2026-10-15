@@ -12,13 +12,18 @@ describe("buildLessonFiles", () => {
       "Solution to Exercise 1.mp4",
       "1.8.12-LESS1_2.mp4",
     ]);
-    expect(videos.map((v) => v.title)).toEqual(["סרטון 1", "סרטון 2", "סרטון 3", "פתרון תרגיל 1"]);
+    expect(videos.map((v) => v.title)).toEqual(["חלק 1", "חלק 2", "חלק 3", "פתרון תרגיל 1"]);
   });
 
   it("מפריד מטלות, מתעלם מקבצים זמניים של Word ומסוגים לא מוכרים", () => {
     const { videos, assignments } = buildLessonFiles(["Practice Lesson 1.pdf", "Practice Lesson 1.docx", "~$actice.docx", "notes.txt"]);
     expect(videos).toEqual([]);
     expect(assignments.map((a) => a.format)).toEqual(["DOCX", "PDF"]);
+  });
+
+  it("שם המטלה בעברית: Practice Lesson N → תרגול שיעור N", () => {
+    const { assignments } = buildLessonFiles(["Practice Lesson 4.pdf", "final project.docx"]);
+    expect(assignments.map((a) => a.title)).toEqual(["final project", "תרגול שיעור 4"]);
   });
 
   it("שם סרטון בעברית נשאר ככותרת", () => {

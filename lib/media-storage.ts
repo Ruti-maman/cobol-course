@@ -40,7 +40,13 @@ function videoTitle(base: string, index: number): string {
   if (/[֐-׿]/.test(base)) return base;
   const solution = /solution to exercise\s*(\d+)/i.exec(base);
   if (solution) return `פתרון תרגיל ${solution[1]}`;
-  return `סרטון ${index + 1}`;
+  return `חלק ${index + 1}`;
+}
+
+/** "Practice Lesson 3" → "תרגול שיעור 3"; שאר השמות נשארים כמו שהם. */
+function assignmentTitle(base: string): string {
+  const practice = /^practice\s*lesson\s*(\d+)$/i.exec(base.trim());
+  return practice ? `תרגול שיעור ${practice[1]}` : base;
 }
 
 /** סדר וכותרות לקובצי שיעור לפי השמות שלהם — זהה לקבצים במחשב ובאחסון. */
@@ -61,7 +67,7 @@ export function buildLessonFiles(names: readonly string[]): LessonFiles {
     .toSorted((a, b) => a.localeCompare(b))
     .map((file) => ({
       file,
-      title: path.parse(file).name,
+      title: assignmentTitle(path.parse(file).name),
       format: path.extname(file).slice(1).toUpperCase(),
     }));
 
