@@ -83,7 +83,11 @@ export function LessonWorkspace({ lessonSlug, initialIndex, videos, watermark, n
           שלב הגמר של הקורס
         </span>
         <h2 id="fp-title">{a.title}</h2>
-        <p>כאן מתחבר כל מה שלמדת לתכנית אחת שלמה. עברת את זה? את כבר מתכנתת COBOL של ממש — והדרך שלך בעולם הפיתוח רק מתחילה.</p>
+        <p className="fp-lines">
+          <span>כאן מתחבר כל מה שלמדת לתכנית אחת שלמה.</span>
+          <strong className="fp-hero-line">עברת את זה? את כבר מתכנתת COBOL של ממש!</strong>
+          <span>והדרך שלך בעולם הפיתוח רק מתחילה.</span>
+        </p>
       </div>
       <div className="fp-actions">
         <button type="button" className="fp-open" onClick={() => setOpen(a)}>

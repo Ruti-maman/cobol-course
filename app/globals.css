@@ -1209,3 +1209,28 @@ body { line-height: 1.7; }
   color: #e3f3e7; -webkit-text-stroke: 0;
 }
 :root[data-theme="light"] .chips li { color: var(--ink-0); }
+
+/* פרויקט הסיום — הטקסט בשורות נפרדות; המשפט המרכזי בולט ו"נושם" (גדל וקטן בעדינות) */
+.final-project .fp-lines { display: grid; gap: 0.3rem; justify-items: start; }
+.fp-lines span { display: block; }
+.fp-hero-line {
+  display: inline-block; font-size: clamp(1.05rem, 1.6vw, 1.3rem); font-weight: 800; color: #1ee86a;
+  transform-origin: right center; animation: fp-pulse 2.4s ease-in-out infinite;
+}
+@keyframes fp-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+:root[data-theme="light"] .fp-hero-line { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .fp-hero-line { animation: none; } }
+/* המשפט ה"נושם" נשאר בתוך הבאנר גם כשהוא גדל */
+.fp-hero-line { max-inline-size: calc(100% / 1.06); }
+/* באנר פרויקט הסיום קומפקטי יותר — כדי שבשלוש שורות עדיין ייכנס בלי גלילה */
+@media (min-width: 960px) {
+  .lesson-page .final-project { padding-block: 0.7rem; row-gap: 0.4rem; }
+  .final-project h2 { font-size: clamp(1.45rem, 2.1vw, 1.9rem); line-height: 1.1; }
+  .final-project .fp-lines { gap: 0.05rem; }
+  .final-project .fp-lines span { font-size: var(--t--1); line-height: 1.45; }
+  .fp-hero-line { font-size: clamp(1rem, 1.35vw, 1.15rem); line-height: 1.4; }
+  .fp-badge { padding-block: 0.15rem; }
+  .fp-trophy { inline-size: 56px; block-size: 56px; }
+}
+.final-project .fp-lines { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 960px) { .fp-hero-line { white-space: nowrap; max-inline-size: none; } }
