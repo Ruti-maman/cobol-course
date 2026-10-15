@@ -78,8 +78,8 @@ export default function HomePage() {
               <p className="eyebrow">תוכנית הלימודים</p>
               <h2 id="lessons-title">מה לומדים בקורס</h2>
               <p>
-                {countLabel(stats.lessons, nouns.lesson)} ושיעור פתיחה, מהבסיס ועד פרויקט סיום. כל שיעור בונה על
-                הקודם.
+                {countLabel(stats.lessons, nouns.lesson)} ושיעור פתיחה, מהבסיס ועד פרויקט סיום. כל שיעור דורש
+                תרגול ושליטה בנלמד כדי להמשיך לשיעור הבא.
               </p>
             </div>
             <ol className="lessons" role="list">
