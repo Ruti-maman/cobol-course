@@ -1243,3 +1243,12 @@ body { line-height: 1.7; }
 }
 @keyframes fp-grow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
 @media (prefers-reduced-motion: reduce) { .final-project { animation: none !important; } }
+
+/* מצב בהיר: רקע ירוק-בהיר אחיד, בלי פסים */
+:root[data-theme="light"] {
+  --bg-0: #e6f3e6; --bg-1: #e6f3e6; --bg-2: #f2faf2; --bg-3: #dcefdc; --bg-4: #d0e9d0;
+}
+:root[data-theme="light"] body { background: var(--bg-0); background-attachment: scroll; }
+:root[data-theme="light"] .band.alt { background: var(--bg-0); }
+:root[data-theme="light"] .cta-box::before { background: none; }
+:root[data-theme="light"] .bar { background: color-mix(in srgb, var(--bg-0) 88%, transparent); }
