@@ -68,6 +68,10 @@ export default function HomePage() {
                   <span className="shine" />
                   לתוכנית הלימודים
                 </a>
+                <Link className="btn btn-1" href="/continue">
+                  <span className="shine" />
+                  המשיכי מאיפה שעצרת
+                </Link>
               </div>
             </div>
           </div>
