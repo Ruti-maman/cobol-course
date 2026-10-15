@@ -6,6 +6,8 @@ import { LessonPlayer } from "./LessonPlayer";
 
 type Props = {
   lessonSlug: string;
+  /** הסרטון שמתחילים ממנו (‎?v=) */
+  initialIndex?: number;
   videos: { title: string; src: string }[];
   /** סימן מים על הסרטון — כרגע ללא; אחרי בניית ההתחברות: שם + טלפון של הלומדת (CLAUDE.md 6.3) */
   watermark?: string;
@@ -19,7 +21,7 @@ type Props = {
 };
 
 /** הנגן + המשימות של השיעור, עם חלון צפייה משותף למשימה. */
-export function LessonWorkspace({ lessonSlug, videos, watermark, nextLesson, assignments, canPlay, fallback, navigation }: Props) {
+export function LessonWorkspace({ lessonSlug, initialIndex, videos, watermark, nextLesson, assignments, canPlay, fallback, navigation }: Props) {
   const [open, setOpen] = useState<Assignment | null>(null);
   const first = assignments[0];
 
@@ -107,6 +109,7 @@ export function LessonWorkspace({ lessonSlug, videos, watermark, nextLesson, ass
       {canPlay ? (
         <LessonPlayer
           lessonSlug={lessonSlug}
+          initialIndex={initialIndex}
           videos={videos}
           watermark={watermark}
           nextLesson={nextLesson}

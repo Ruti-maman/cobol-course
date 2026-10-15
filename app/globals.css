@@ -1139,3 +1139,11 @@ body { line-height: 1.7; }
   -webkit-text-stroke: 0.4px currentColor; paint-order: stroke fill;
 }
 .eyebrow::before, .eyebrow::after { color: var(--accent); font-weight: 700; }
+
+/* כרטיס "המשיכי מאיפה שעצרת" — כל הכרטיס לחיץ */
+.card { position: relative; }
+.card-link { color: inherit; text-decoration: none; }
+.card-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.card:has(.card-link) { cursor: pointer; }
+.card:has(.card-link):hover { border-color: var(--accent); }
+.card:has(.card-link) h3::after { content: " ←"; color: var(--accent); }

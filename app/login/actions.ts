@@ -63,7 +63,8 @@ export async function loginAction(prev: LoginState, formData: FormData): Promise
         error: isRateLimited(error) ? "יותר מדי ניסיונות. המתיני כמה דקות ונסי שוב." : "הקוד שגוי או שפג תוקפו.",
       };
     }
-    redirect(safeNextPath(formData.get("next")));
+    // בלי יעד מפורש — ישר לסרטון האחרון שנצפה ("המשיכי מאיפה שעצרת")
+    redirect(safeNextPath(formData.get("next"), "/continue"));
   }
 
   return { step: "email" };

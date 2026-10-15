@@ -20,6 +20,7 @@ const features = [
   {
     hue: "var(--c3)",
     title: "המשיכי מאיפה שעצרת",
+    href: "/continue",
     text: "האתר זוכר איפה עצרת בכל סרטון ומראה כמה התקדמת בכל שיעור ובקורס כולו.",
     icon: <path d="M12 4a8 8 0 1 0 8 8M12 8v4l3 2M17 3.5l3 .5-.5 3" />,
   },
@@ -130,7 +131,15 @@ export default function HomePage() {
                       {f.icon}
                     </svg>
                   </span>
-                  <h3>{f.title}</h3>
+                  <h3>
+                    {"href" in f && f.href ? (
+                      <Link className="card-link" href={f.href}>
+                        {f.title}
+                      </Link>
+                    ) : (
+                      f.title
+                    )}
+                  </h3>
                   <p>{f.text}</p>
                 </article>
               ))}

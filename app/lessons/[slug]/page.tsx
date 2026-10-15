@@ -6,16 +6,21 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
 import { getPublishedLesson, getPublishedLessons } from "@/lib/course";
+import { parseVideoIndex } from "@/lib/last-watched";
 import { getLessonFiles } from "@/lib/media-storage";
 
 // הדף מחייב התחברות + זכאות לשיעור הספציפי, בשרת (CLAUDE.md סעיף 6.1).
 export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const { slug } = await props.params;
+  const { v } = await props.searchParams;
   const lesson = getPublishedLesson(slug);
   if (!lesson) notFound();
 
   const access = await getLessonAccess(lesson.slug);
-  if (access === "login") redirect(`/login?next=${encodeURIComponent(`/lessons/${lesson.slug}`)}`);
+  if (access === "login") {
+    const back = typeof v === "string" && /^\d+$/.test(v) ? `/lessons/${lesson.slug}?v=${v}` : `/lessons/${lesson.slug}`;
+    redirect(`/login?next=${encodeURIComponent(back)}`);
+  }
   if (access !== "ok") {
     return (
       <>
@@ -80,6 +85,7 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
 
         <LessonWorkspace
           lessonSlug={lesson.slug}
+          initialIndex={parseVideoIndex(v, videos.length)}
           videos={videos.map((v) => ({ title: v.title, src: media(v.file) }))}
           nextLesson={next && { href: `/lessons/${next.slug}`, label: `שיעור ${next.position}: ${next.title}` }}
           assignments={assignmentList}

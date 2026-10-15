@@ -9,7 +9,7 @@ export const metadata = { title: "כניסה ללומדות · קורס COBOL" }
 
 export default async function LoginPage(props: PageProps<"/login">) {
   const { next, error } = await props.searchParams;
-  const nextPath = safeNextPath(next);
+  const nextPath = safeNextPath(next, "/continue");
 
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();

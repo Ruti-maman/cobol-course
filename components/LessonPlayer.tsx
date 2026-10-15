@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCourseApp } from "@/lib/desktop-app";
+import { saveLastWatched } from "@/lib/last-watched";
 import { applyPlaybackRate, loadPlaybackRate, savePlaybackRate } from "@/lib/playback-rate";
 
 type Video = { title: string; src: string };
@@ -105,6 +106,7 @@ export function LessonPlayer({
   onOpenAssignment,
   assignmentIsFinal,
   sidebar,
+  initialIndex = 0,
 }: {
   lessonSlug: string;
   videos: Video[];
@@ -117,8 +119,10 @@ export function LessonPlayer({
   assignmentIsFinal?: boolean;
   /** תוכן נוסף לעמודת הצד, מתחת לרשימת הסרטונים (משימה, מעבר בין שיעורים) */
   sidebar?: React.ReactNode;
+  /** הסרטון שמתחילים ממנו (מ"המשיכי מאיפה שעצרת": ‎/lessons/x?v=2) */
+  initialIndex?: number;
 }) {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(initialIndex);
   const [ended, setEnded] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const autoplayRef = useRef(false);
@@ -149,6 +153,8 @@ export function LessonPlayer({
       try {
         localStorage.setItem(storageKey, String(Math.floor(el.currentTime)));
       } catch {}
+      // הסרטון הזה הוא עכשיו "האחרון שנצפה" — לשם יחזרו מכפתור "המשיכי מאיפה שעצרת" ואחרי התחברות
+      if (el.currentTime > 0) saveLastWatched({ slug: lessonSlug, index: current });
     };
     const autoplay = () => {
       if (autoplayRef.current) {
@@ -172,7 +178,7 @@ export function LessonPlayer({
       el.removeEventListener("timeupdate", save);
       el.removeEventListener("ratechange", rememberRate);
     };
-  }, [storageKey]);
+  }, [storageKey, lessonSlug, current]);
 
   // אם הרשת נפלה לרגע באמצע צפייה — טוענים שוב בשקט וממשיכים מאותה שנייה, בלי שהלומדת תרגיש.
   // תמיד אותה כתובת בדיוק (בלי תוספות): מערכות סינון מאשרות כל כתובת כפי שהיא.
