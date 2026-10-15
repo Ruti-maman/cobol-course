@@ -1147,3 +1147,12 @@ body { line-height: 1.7; }
 .card:has(.card-link) { cursor: pointer; }
 .card:has(.card-link):hover { border-color: var(--accent); }
 .card:has(.card-link) h3::after { content: " ←"; color: var(--accent); }
+
+/* תגיות הנושאים ברשימת השיעורים — כתב וריבועים גדולים יותר */
+.chips { gap: 0.5rem; margin-block-start: 0.6rem; }
+.chips li { font-size: var(--t--1); padding: 0.35rem 0.85rem; line-height: 1.4; }
+/* גם כותרות "*** … ***" שבתוך קטעים (.head p מכסה אותן אחרת) */
+.head .eyebrow {
+  font-size: var(--t-1); font-weight: 700; letter-spacing: 0.04em; color: var(--ink-0);
+  -webkit-text-stroke: 0.4px currentColor; paint-order: stroke fill;
+}
