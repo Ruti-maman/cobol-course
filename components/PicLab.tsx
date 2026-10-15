@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { parsePic, type PicUsage } from "@/lib/pic";
+import { parsePic } from "@/lib/pic";
 
 const EXAMPLES = ["S9(5)V99", "9(3)", "X(10)", "9(7)V99", "A(5)"];
 
 /** מעבדת PIC: מקלידים הגדרת שדה ורואים מיד גודל, טווח ודוגמה. */
 export function PicLab() {
   const [pic, setPic] = useState("S9(5)V99");
-  const [usage, setUsage] = useState<PicUsage>("display");
-  const r = parsePic(pic, usage);
+  const r = parsePic(pic);
 
   return (
     <div className="lab">
@@ -36,14 +35,6 @@ export function PicLab() {
               {ex}
             </button>
           ))}
-        </div>
-        <div className="lab-usage" role="radiogroup" aria-label="אופן אחסון">
-          <button type="button" role="radio" aria-checked={usage === "display"} onClick={() => setUsage("display")}>
-            DISPLAY <small>רגיל</small>
-          </button>
-          <button type="button" role="radio" aria-checked={usage === "comp3"} onClick={() => setUsage("comp3")}>
-            COMP-3 <small>דחוס</small>
-          </button>
         </div>
       </div>
 
@@ -78,8 +69,7 @@ export function PicLab() {
             </div>
             <p className="lab-note">
               {r.decDigits > 0 && "ה-V מסמן נקודה עשרונית משתמעת — היא לא תופסת מקום בזיכרון. "}
-              {r.signed && usage === "display" && "הסימן (S) משולב בספרה האחרונה ולא מוסיף בית. "}
-              {usage === "comp3" && "ב-COMP-3 כל בית מחזיק שתי ספרות, וחצי בית שמור לסימן."}
+              {r.signed && "הסימן (S) משולב בספרה האחרונה ולא מוסיף בית."}
             </p>
           </>
         ) : (
