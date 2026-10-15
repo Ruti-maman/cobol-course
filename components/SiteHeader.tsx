@@ -14,6 +14,7 @@ export function SiteHeader({ wide = false }: { wide?: boolean }) {
         </Link>
         <nav aria-label="ניווט ראשי">
           <a href="#lessons">תוכנית הלימודים</a>
+          <a href="#lab">מעבדת PIC</a>
           <a href="#how">איך זה עובד</a>
         </nav>
         <div className="tools">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PicLab } from "@/components/PicLab";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getCourseStats, getPublishedLessons } from "@/lib/course";
@@ -110,6 +111,17 @@ export default function HomePage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        <section className="band" id="lab" aria-labelledby="lab-title">
+          <div className="wrap">
+            <div className="head">
+              <p className="eyebrow">מעבדת PIC</p>
+              <h2 id="lab-title">נסי בעצמך: כמה מקום תופס שדה?</h2>
+              <p>הקלידי הגדרת PIC, כמו שכותבים ב-COBOL, וראי מיד את הגודל בזיכרון, את טווח הערכים ודוגמה.</p>
+            </div>
+            <PicLab />
           </div>
         </section>
 
