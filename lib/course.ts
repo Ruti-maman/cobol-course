@@ -24,7 +24,7 @@ const lessons: Lesson[] = [
     position: 0,
     kind: "intro",
     title: "התקנת סביבת עבודה",
-    summary: "מכינות את המחשב לכתיבה, קומפילציה והרצה של תכניות COBOL.",
+    summary: "הכנת המחשב לכתיבה, קומפילציה והרצה של תכניות COBOL.",
     topics: ["סביבת עבודה", "סילבוס"],
     videoCount: 1,
     assignmentCount: 0,
