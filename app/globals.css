@@ -1234,3 +1234,12 @@ body { line-height: 1.7; }
 }
 .final-project .fp-lines { grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 960px) { .fp-hero-line { white-space: nowrap; max-inline-size: none; } }
+
+/* פרויקט הסיום: בלי סמן מהבהב אחרי הכותרת; כל הריבוע "נושם" (גדל וקטן) במקום השורה לבדה */
+.final-project h2::after { content: none; display: none; }
+.fp-hero-line { animation: none; }
+@media (min-width: 720px) {
+  .final-project { animation: fp-breathe 3.6s ease-in-out infinite, fp-grow 3.6s ease-in-out infinite; transform-origin: center; }
+}
+@keyframes fp-grow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+@media (prefers-reduced-motion: reduce) { .final-project { animation: none !important; } }
