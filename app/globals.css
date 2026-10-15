@@ -4,7 +4,7 @@
    TOKENS — כהה הוא העיצוב הראשי; בהיר הוא החלפה מלאה
    ══════════════════════════════════════════════════════════ */
 /* רוחב דף שיעור — גם הסרגל העליון באותו רוחב */
-:root { --wrap-wide: 1280px; --bar-h: 95px; /* סרגל עליון + שורת FMT */ }
+:root { --wrap-wide: 1280px; --bar-h: 98px; /* סרגל עליון + שורת FMT */ }
 .bar-in.wide { max-width: var(--wrap-wide); }
 
 :root {
@@ -1345,3 +1345,7 @@ body { line-height: 1.7; }
 
 /* הלוגו CB בסרגל העליון — אותיות גדולות וברורות */
 .brand .sig { inline-size: 38px; block-size: 38px; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+
+/* סרגל העמודות FMT מתחת לסרגל העליון — גדול וברור יותר */
+.bar::after { font-size: 0.9375rem; font-weight: 700; opacity: 0.9; color: #15b04e; padding-block: 0.3rem; letter-spacing: 0.02em; }
+:root[data-theme="light"] .bar::after { color: #0b7a34; }
