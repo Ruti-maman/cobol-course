@@ -1168,3 +1168,36 @@ body { line-height: 1.7; }
 }
 .lesson:hover .chips li { background: rgba(11, 144, 60, 0.24); }
 :root[data-theme="light"] .chips li { background: rgba(11, 122, 52, 0.1); border-color: rgba(11, 122, 52, 0.6); }
+
+/* ══════════════════════════════════════════════════════════
+   פרויקט הסיום — אנימציה: פס אור ירוק שעובר על הבאנר, מסגרת "נושמת",
+   גביע שמרחף ונוצץ, וסמן מהבהב אחרי הכותרת (כמו במסוף)
+   ══════════════════════════════════════════════════════════ */
+.final-project { position: relative; overflow: hidden; isolation: isolate; animation: fp-breathe 3.6s ease-in-out infinite; }
+@keyframes fp-breathe {
+  0%, 100% { border-color: rgba(11, 144, 60, 0.55); box-shadow: 0 0 0 0 rgba(11, 144, 60, 0); }
+  50%      { border-color: #1ee86a;                 box-shadow: 0 0 34px -6px rgba(30, 232, 106, 0.45); }
+}
+/* פס אור שסורק את הבאנר מצד לצד, כמו קרן במסך */
+.final-project::after {
+  content: ""; position: absolute; inset-block: 0; inline-size: 35%; z-index: -1; pointer-events: none;
+  inset-inline-start: -40%;
+  background: linear-gradient(100deg, transparent, rgba(30, 232, 106, 0.16), transparent);
+  animation: fp-scan 4.2s ease-in-out infinite;
+}
+@keyframes fp-scan { 0% { inset-inline-start: -40%; } 60%, 100% { inset-inline-start: 110%; } }
+/* גביע מרחף עם הבזק */
+.fp-trophy { animation: fp-float 3s ease-in-out infinite, fp-glint 3s ease-in-out infinite; }
+@keyframes fp-float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-6px) rotate(-4deg); } }
+@keyframes fp-glint { 0%, 100% { box-shadow: 0 0 0 0 rgba(30, 232, 106, 0); } 50% { box-shadow: 0 0 26px 2px rgba(30, 232, 106, 0.55); } }
+/* סמן מהבהב אחרי "פרויקט הסיום" */
+.final-project h2::after {
+  content: ""; display: inline-block; inline-size: 0.45em; block-size: 0.85em; margin-inline-start: 0.2em;
+  background: #1ee86a; vertical-align: -0.08em; animation: blink 1.05s steps(2) infinite;
+}
+/* הכפתור — ברק שעובר עליו */
+.fp-open { position: relative; overflow: hidden; }
+.fp-open .shine { display: block !important; animation: sweep 3.2s var(--ease) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .final-project, .final-project::after, .fp-trophy, .final-project h2::after, .fp-open .shine { animation: none !important; }
+}
