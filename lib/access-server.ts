@@ -36,12 +36,15 @@ async function hasReviewPass(): Promise<boolean> {
 export async function getLessonAccess(lessonSlug: string): Promise<LessonAccess> {
   if (devAccessBypass(process.env)) return "ok";
   try {
-    if (await hasReviewPass()) return "ok";
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase.auth.getUser();
+    const user = data.user;
+    // קישור בדיקה (נטפרי) — רק למבקר שלא מחובר. משתמשת מחוברת נבדקת תמיד לפי הזכאות שלה,
+    // כך שעוגיית בדיקה שנשארה בדפדפן לא פותחת שיעורים למי שלא אושרה.
+    if (!user) return (await hasReviewPass()) ? "ok" : "login";
     // המנהלת רואה כל שיעור (גם טיוטה, לתצוגה מקדימה).
-    if (isAdminEmail(data.user?.email, process.env.ADMIN_EMAILS)) return "ok";
-    return await loadLessonAccess(supabaseAccessSource(supabase, data.user?.id ?? null), lessonSlug);
+    if (isAdminEmail(user.email, process.env.ADMIN_EMAILS)) return "ok";
+    return await loadLessonAccess(supabaseAccessSource(supabase, user.id), lessonSlug);
   } catch {
     return "forbidden";
   }
