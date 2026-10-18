@@ -1,7 +1,8 @@
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
-export const metadata = { title: "מדיניות פרטיות · קורס COBOL" };
+// לא מקושר מהאתר ולא מופיע בחיפוש — קיים רק כי Google דורש כתובת מדיניות פרטיות לכניסה עם Google.
+export const metadata = { title: "מדיניות פרטיות · קורס COBOL", robots: { index: false, follow: false } };
 
 // נוסח בסיסי — לבדיקה מול יועץ משפטי לפני פתיחת הקורס (CLAUDE.md סעיף 6.7).
 export default function PrivacyPage() {
