@@ -64,7 +64,7 @@ export default async function AdminHome() {
       <section className="adm-box">
         <h2>איך מאשרים לומדת חדשה?</h2>
         <ol className="adm-steps">
-          <li>הלומדת נכנסת לאתר ב&quot;כניסה ללומדות&quot; עם המייל שלה ומקבלת קוד — כך היא נרשמת.</li>
+          <li>הלומדת נכנסת לאתר ב&quot;כניסה ללומדות&quot; ולוחצת &quot;המשיכי עם Google&quot; — כך היא נרשמת.</li>
           <li>
             אחרי שהתשלום התקבל: בדף <Link href="/admin/learners">לומדות</Link> לוחצים &quot;אישור לשנה&quot; ליד המייל שלה (או מקלידים
             מייל ידנית).

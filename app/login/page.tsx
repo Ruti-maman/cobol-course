@@ -44,7 +44,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
             <h1>כניסה ללומדות</h1>
             <p>
               {google
-                ? "בלי סיסמה: עם חשבון Google, או עם קוד חד-פעמי שנשלח למייל."
+                ? "בלי סיסמה: נכנסים עם חשבון ה-Google שלך, מכל מחשב, בכל זמן."
                 : "בלי סיסמה: נשלח לך קוד חד-פעמי למייל."}
             </p>
             {error === "link" && (
@@ -54,7 +54,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
             )}
             {error && error !== "link" && (
               <p className="login-error" role="alert">
-                ההתחברות עם Google לא הושלמה. נסי שוב, או היכנסי עם קוד למייל.
+                ההתחברות עם Google לא הושלמה. נסי שוב.
               </p>
             )}
             {google && (
@@ -88,12 +88,10 @@ export default async function LoginPage(props: PageProps<"/login">) {
                     המשיכי עם Google
                   </button>
                 </form>
-                <p className="login-or" aria-hidden="true">
-                  או
-                </p>
               </>
             )}
-            <LoginForm next={nextPath} />
+            {/* קוד למייל — רק כגיבוי, אם הכניסה עם Google לא מופעלת (מגבלת מיילים בשעה של Supabase) */}
+            {!google && <LoginForm next={nextPath} />}
           </>
         )}
       </main>
