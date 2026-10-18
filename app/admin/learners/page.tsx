@@ -1,13 +1,21 @@
-import { extendAccess, grantAccess, revokeAccess } from "@/app/admin/actions";
+import {
+  deleteLearner,
+  extendAccess,
+  grantAccess,
+  revokeAccess,
+} from "@/app/admin/actions";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { Flash, flatParams } from "@/components/admin/Flash";
 import { daysLeft, fmtDate } from "@/components/admin/format";
 import {
+  allActivity,
   allEntitlements,
   listAllUsers,
+  summarizeActivity,
   summarizeLearners,
   type Learner,
 } from "@/lib/admin-data";
+import { formatWatchTime } from "@/lib/watch-time";
 import { loadPublishedLessons } from "@/lib/lessons-store";
 
 export const metadata = { title: "לומדות · ניהול" };
@@ -26,6 +34,13 @@ function Expiry({ learner }: { learner: Learner }) {
   );
 }
 
+/** כניסה אחרונה לאתר או צפייה אחרונה — המאוחרת מביניהן */
+function lastActive(l: Learner): string | null {
+  const a = l.activity.lastSeen;
+  const b = l.lastSignIn;
+  return !a ? b : !b ? a : a > b ? a : b;
+}
+
 function Rows({ list, empty }: { list: Learner[]; empty: string }) {
   if (!list.length) return <p className="adm-empty">{empty}</p>;
   return (
@@ -35,7 +50,9 @@ function Rows({ list, empty }: { list: Learner[]; empty: string }) {
           <tr>
             <th>מייל</th>
             <th>נרשמה</th>
-            <th>כניסה אחרונה</th>
+            <th>פעילות אחרונה</th>
+            <th>זמן צפייה</th>
+            <th>כניסות לשיעורים</th>
             <th>שיעורים פתוחים</th>
             <th>גישה עד</th>
             <th>הערה</th>
@@ -49,7 +66,15 @@ function Rows({ list, empty }: { list: Learner[]; empty: string }) {
                 <span className="ltr">{l.email}</span>
               </td>
               <td data-label="נרשמה">{fmtDate(l.registeredAt)}</td>
-              <td data-label="כניסה אחרונה">{fmtDate(l.lastSignIn)}</td>
+              <td data-label="פעילות אחרונה">{fmtDate(lastActive(l))}</td>
+              <td data-label="זמן צפייה">
+                {formatWatchTime(l.activity.seconds)}
+              </td>
+              <td data-label="כניסות לשיעורים">
+                {l.activity.views
+                  ? `${l.activity.views} (${l.activity.days === 1 ? "ביום אחד" : `ב-${l.activity.days} ימים`})`
+                  : "—"}
+              </td>
               <td data-label="שיעורים פתוחים">{l.lessons}</td>
               <td data-label="גישה עד">
                 <Expiry learner={l} />
@@ -91,6 +116,18 @@ function Rows({ list, empty }: { list: Learner[]; empty: string }) {
                     </form>
                   </>
                 )}
+                <form action={deleteLearner}>
+                  <input type="hidden" name="userId" value={l.id} />
+                  <input type="hidden" name="email" value={l.email} />
+                  <ConfirmButton
+                    className="btn btn-2 sm danger"
+                    message={`להסיר את ${l.email} מהאתר?
+
+החשבון יימחק לגמרי: הגישה לשיעורים ונתוני הפעילות שלה. אי אפשר לבטל. אם היא תתחבר שוב, היא תופיע כהרשמה חדשה שממתינה לאישור.`}
+                  >
+                    הסרה
+                  </ConfirmButton>
+                </form>
               </td>
             </tr>
           ))}
@@ -106,8 +143,14 @@ export default async function LearnersPage(
   const params = flatParams(await props.searchParams);
   const q = (params.q ?? "").trim().toLowerCase();
   const [learners, lessons] = await Promise.all([
-    Promise.all([listAllUsers(), allEntitlements().catch(() => [])])
-      .then(([users, rows]) => summarizeLearners(users, rows))
+    Promise.all([
+      listAllUsers(),
+      allEntitlements().catch(() => []),
+      allActivity(),
+    ])
+      .then(([users, rows, activity]) =>
+        summarizeLearners(users, rows, undefined, summarizeActivity(activity)),
+      )
       .catch(() => null),
     loadPublishedLessons(),
   ]);
@@ -123,6 +166,11 @@ export default async function LearnersPage(
         <h1>לומדות וגישה לקורס</h1>
       </div>
       <Flash params={params} />
+
+      <p className="adm-hint">
+        זמן צפייה = כמה זמן סרטון באמת התנגן אצלה. כניסות לשיעורים = כמה פעמים
+        פתחה דף שיעור.
+      </p>
 
       <section className="adm-box">
         <h2>אישור גישה לפי מייל</h2>

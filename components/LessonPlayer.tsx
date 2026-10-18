@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useWatchTime } from "./useWatchTime";
 import { getCourseApp } from "@/lib/desktop-app";
 import { saveLastWatched } from "@/lib/last-watched";
 import { markWatched, videoKey } from "@/lib/progress";
@@ -148,6 +149,8 @@ export function LessonPlayer({
   const nextVideo = videos[current + 1];
   const storageKey = video ? `pos:${lessonSlug}:${video.src}` : "";
   const watched = useWatched();
+  // זמן צפייה וכניסות לשיעור — לצד הניהול
+  useWatchTime(ref, lessonSlug);
 
   // שמירת נקודת הצפייה בכל סרטון — "המשיכי מאיפה שעצרת".
   useEffect(() => {

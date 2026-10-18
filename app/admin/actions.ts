@@ -123,6 +123,19 @@ export async function revokeAccess(formData: FormData) {
   back("/admin/learners", { ok: "revoked", email });
 }
 
+/** הסרת לומדת: מוחק את החשבון כולו — זכאויות ונתוני פעילות נמחקים איתו. אם תתחבר שוב, תופיע כחדשה. */
+export async function deleteLearner(formData: FormData) {
+  const admin = await requireAdmin();
+  const parsed = userSchema.safeParse({ userId: formData.get("userId"), email: formData.get("email") ?? "" });
+  if (!parsed.success) back("/admin/learners", { err: "input" });
+  const { userId, email } = parsed.data;
+  if (email.toLowerCase() === admin.email) back("/admin/learners", { err: "self" });
+  const { error } = await createSupabaseAdminClient().auth.admin.deleteUser(userId);
+  if (error) back("/admin/learners", { err: "db" });
+  await audit(admin, "learner.delete", { email, userId });
+  back("/admin/learners", { ok: "removed", email });
+}
+
 // ── שיעורים ────────────────────────────────────────────────────────────
 
 const lessonFields = z.object({

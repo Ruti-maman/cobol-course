@@ -4,6 +4,7 @@ const ok: Record<string, (p: Params) => string> = {
   granted: (p) => `הגישה אושרה ל-${p.email}. היא יכולה להתחבר עכשיו עם חשבון ה-Google של המייל הזה.`,
   extended: (p) => `הגישה של ${p.email} הוארכה.`,
   revoked: (p) => `הגישה של ${p.email} בוטלה.`,
+  removed: (p) => `${p.email} הוסרה מהאתר.`,
   created: () => "השיעור נוצר כטיוטה. עכשיו אפשר להעלות אליו סרטונים ומטלות, ולפרסם כשהוא מוכן.",
   saved: () => "השינויים נשמרו.",
   published: () => "השיעור פורסם ומופיע עכשיו באתר.",
@@ -21,6 +22,7 @@ const err: Record<string, string> = {
   migration: "צריך קודם להריץ את קובץ ההגדרה db/migrations/0003_admin.sql במסד הנתונים (פעם אחת).",
   db: "השמירה במסד הנתונים נכשלה. נסי שוב בעוד רגע.",
   file: "הקובץ לא נמצא.",
+  self: "אי אפשר להסיר את החשבון של המנהלת עצמה.",
 };
 
 type Params = Record<string, string | undefined>;

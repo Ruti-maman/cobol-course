@@ -7,6 +7,7 @@ const labels: Record<string, string> = {
   grant: "אישור גישה",
   extend: "הארכת גישה",
   revoke: "ביטול גישה",
+  "learner.delete": "הסרת לומדת",
   "lesson.create": "שיעור חדש",
   "lesson.update": "עריכת שיעור",
   "lesson.publish": "פרסום שיעור",

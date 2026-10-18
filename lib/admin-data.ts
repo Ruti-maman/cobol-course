@@ -61,6 +61,33 @@ export async function allEntitlements(): Promise<EntitlementRow[]> {
   return (data ?? []) as EntitlementRow[];
 }
 
+export type ActivityRow = { user_id: string; day: string; seconds: number; views: number; last_seen: string };
+export type Activity = { seconds: number; views: number; days: number; lastSeen: string | null };
+
+/** פעילות כל הלומדות (0004_activity.sql). לפני שהקובץ רץ — ריק. */
+export async function allActivity(): Promise<ActivityRow[]> {
+  const { data, error } = await createSupabaseAdminClient().from("learner_activity").select("user_id, day, seconds, views, last_seen");
+  if (error) return [];
+  return (data ?? []) as ActivityRow[];
+}
+
+export function summarizeActivity(rows: readonly ActivityRow[]): Map<string, Activity> {
+  const map = new Map<string, Activity>();
+  const days = new Map<string, Set<string>>();
+  for (const r of rows) {
+    const a = map.get(r.user_id) ?? { seconds: 0, views: 0, days: 0, lastSeen: null };
+    const d = days.get(r.user_id) ?? new Set<string>();
+    d.add(r.day);
+    days.set(r.user_id, d);
+    a.seconds += r.seconds;
+    a.views += r.views;
+    a.days = d.size;
+    if (!a.lastSeen || r.last_seen > a.lastSeen) a.lastSeen = r.last_seen;
+    map.set(r.user_id, a);
+  }
+  return map;
+}
+
 export type LearnerStatus = "active" | "expired" | "pending";
 
 export type Learner = {
@@ -73,10 +100,18 @@ export type Learner = {
   expiresAt: string | null;
   note: string | null;
   status: LearnerStatus;
+  activity: Activity;
 };
 
 /** סיכום לכל לומדת: ממתינה לאישור (נרשמה, אין זכאות) / פעילה / שהתוקף שלה פג. */
-export function summarizeLearners(users: readonly User[], rows: readonly EntitlementRow[], now: number = Date.now()): Learner[] {
+const NO_ACTIVITY: Activity = { seconds: 0, views: 0, days: 0, lastSeen: null };
+
+export function summarizeLearners(
+  users: readonly User[],
+  rows: readonly EntitlementRow[],
+  now: number = Date.now(),
+  activity: ReadonlyMap<string, Activity> = new Map(),
+): Learner[] {
   const byUser = new Map<string, EntitlementRow[]>();
   for (const row of rows) byUser.set(row.user_id, [...(byUser.get(row.user_id) ?? []), row]);
 
@@ -97,6 +132,7 @@ export function summarizeLearners(users: readonly User[], rows: readonly Entitle
         expiresAt: noEnd ? null : latest,
         note: own.find((r) => r.note)?.note ?? null,
         status,
+        activity: activity.get(u.id) ?? NO_ACTIVITY,
       };
     })
     .toSorted((a, b) => b.registeredAt.localeCompare(a.registeredAt));
