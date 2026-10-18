@@ -3,8 +3,9 @@ import { PicLab } from "@/components/PicLab";
 import { CourseProgress, LessonProgress } from "@/components/Progress";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getCourseStats, getPublishedLessons } from "@/lib/course";
+import { getCourseStats } from "@/lib/course";
 import { countLabel, nouns } from "@/lib/hebrew";
+import { loadPublishedLessons } from "@/lib/lessons-store";
 
 const features = [
   {
@@ -29,8 +30,11 @@ const features = [
   },
 ];
 
-export default function HomePage() {
-  const lessons = getPublishedLessons();
+// השיעורים מתעדכנים מממשק הניהול (revalidatePath); בדיקה נוספת לכל היותר כל 5 דקות.
+export const revalidate = 300;
+
+export default async function HomePage() {
+  const lessons = await loadPublishedLessons();
   const stats = getCourseStats(lessons);
 
   return (

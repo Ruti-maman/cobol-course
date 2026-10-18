@@ -5,16 +5,18 @@ import { LessonWorkspace } from "@/components/LessonWorkspace";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
-import { getPublishedLesson, getPublishedLessons } from "@/lib/course";
+import { isAdminRequest } from "@/lib/admin-server";
 import { parseVideoIndex } from "@/lib/last-watched";
+import { loadLessonForViewer, loadPublishedLessons } from "@/lib/lessons-store";
 import { getLessonFiles } from "@/lib/media-storage";
 
 // הדף מחייב התחברות + זכאות לשיעור הספציפי, בשרת (CLAUDE.md סעיף 6.1).
 export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const { slug } = await props.params;
   const { v } = await props.searchParams;
-  const lesson = getPublishedLesson(slug);
-  if (!lesson) notFound();
+  const found = await loadLessonForViewer(slug, isAdminRequest);
+  if (!found) notFound();
+  const { lesson, preview } = found;
 
   const access = await getLessonAccess(lesson.slug);
   if (access === "login") {
@@ -43,10 +45,10 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
   const { videos, assignments } = await getLessonFiles(lesson);
   const media = (file: string) => `/api/media/${lesson.slug}/${encodeURIComponent(file)}`;
 
-  const all = getPublishedLessons();
+  const all = await loadPublishedLessons();
   const index = all.findIndex((l) => l.slug === lesson.slug);
-  const prev = all[index - 1];
-  const next = all[index + 1];
+  const prev = preview ? undefined : all[index - 1];
+  const next = preview ? undefined : all[index + 1];
   const totalLessons = all.filter((l) => l.kind === "lesson").length;
 
   // אותה משימה בכמה פורמטים (Word + PDF) → משימה אחת עם כמה קבצים.
@@ -68,6 +70,11 @@ export default async function LessonPage(props: PageProps<"/lessons/[slug]">) {
     <>
       <SiteHeader wide />
       <main id="main" className="wrap lesson-page">
+        {preview && (
+          <p className="preview-note" role="status">
+            תצוגה מקדימה — השיעור עדיין טיוטה, ורק את רואה אותו. <Link href={`/admin/lessons/${lesson.slug}`}>חזרה לעריכה</Link>
+          </p>
+        )}
         <div className="head lesson-head">
           <p className="lesson-badge">
             {lesson.kind === "intro" ? (

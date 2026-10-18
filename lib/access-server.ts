@@ -1,25 +1,27 @@
 import { cookies } from "next/headers";
 import { devAccessBypass, loadLessonAccess, type AccessSource, type LessonAccess } from "./access";
+import { activeSlugs, isAdminEmail } from "./admin-rules";
 import { isValidReviewPass, parseReviewCookie, REVIEW_COOKIE } from "./review";
 import { createSupabaseServerClient } from "./supabase/server";
 
 type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
-function supabaseAccessSource(supabase: ServerClient): AccessSource {
+type EntitlementRow = { lesson_slug: string; expires_at?: string | null };
+
+function supabaseAccessSource(supabase: ServerClient, userId: string | null): AccessSource {
   return {
     async currentUserId() {
-      const { data } = await supabase.auth.getUser();
-      return data.user?.id ?? null;
+      return userId;
     },
     async entitledLessons(userId, lessonSlugs) {
       // RLS מחזיר רק שורות של המשתמשת המחוברת; הסינון לפי user_id הוא שכבת הגנה נוספת.
-      const { data, error } = await supabase
-        .from("lesson_entitlements")
-        .select("lesson_slug")
-        .eq("user_id", userId)
-        .in("lesson_slug", [...lessonSlugs]);
+      const query = (columns: string) =>
+        supabase.from("lesson_entitlements").select(columns).eq("user_id", userId).in("lesson_slug", [...lessonSlugs]);
+      let { data, error } = await query("lesson_slug, expires_at");
+      // עמודת התוקף נוספת ב-0003_admin.sql; עד שהקובץ רץ — זכאויות בלי תוקף, כמו קודם.
+      if (error?.code === "42703") ({ data, error } = await query("lesson_slug"));
       if (error || !data) return null;
-      return data.map((row: { lesson_slug: string }) => row.lesson_slug);
+      return activeSlugs(data as unknown as EntitlementRow[]);
     },
   };
 }
@@ -35,7 +37,11 @@ export async function getLessonAccess(lessonSlug: string): Promise<LessonAccess>
   if (devAccessBypass(process.env)) return "ok";
   try {
     if (await hasReviewPass()) return "ok";
-    return await loadLessonAccess(supabaseAccessSource(await createSupabaseServerClient()), lessonSlug);
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    // המנהלת רואה כל שיעור (גם טיוטה, לתצוגה מקדימה).
+    if (isAdminEmail(data.user?.email, process.env.ADMIN_EMAILS)) return "ok";
+    return await loadLessonAccess(supabaseAccessSource(supabase, data.user?.id ?? null), lessonSlug);
   } catch {
     return "forbidden";
   }

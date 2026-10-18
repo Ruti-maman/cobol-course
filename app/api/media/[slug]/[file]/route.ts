@@ -3,7 +3,9 @@ import { stat } from "node:fs/promises";
 import path from "node:path";
 import { getLessonAccess } from "@/lib/access-server";
 import { mayStreamVideo } from "@/lib/app-client";
-import { getPublishedLesson, type Lesson } from "@/lib/course";
+import { isAdminRequest } from "@/lib/admin-server";
+import type { Lesson } from "@/lib/course";
+import { loadLessonForViewer } from "@/lib/lessons-store";
 import { mediaSource, readStoredFile, resolveMediaFile, signedMediaUrl } from "@/lib/media-storage";
 import { isPublicVideoWindow } from "@/lib/public-video";
 import { clampVideoRange } from "@/lib/video-range";
@@ -126,7 +128,7 @@ async function serveFromStorage(request: Request, lesson: Lesson, file: string) 
 
 export async function GET(request: Request, ctx: RouteContext<"/api/media/[slug]/[file]">) {
   const { slug, file } = await ctx.params;
-  const lesson = getPublishedLesson(slug);
+  const lesson = (await loadLessonForViewer(slug, isAdminRequest))?.lesson;
   if (!lesson) return notFound();
 
   // חלון זמני לבדיקת סינון (lib/public-video.ts): רק סרטונים פתוחים בלי התחברות, עד התאריך שנקבע.

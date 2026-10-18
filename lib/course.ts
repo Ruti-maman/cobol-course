@@ -1,6 +1,6 @@
-// נתוני הקורס — זמני, עד שמסד הנתונים יוקם (שלב 3 בתוכנית).
-// הכותרות והנושאים מסוכמים מתוך הסילבוס (content-source/less0) וממתינים לאישור בעלת התוכן.
-// אין להניח מספר קבוע של שיעורים: כל ספירה באתר מחושבת מהרשימה הזו.
+// נתוני הקורס. המקור הראשי: טבלת lessons במסד הנתונים (מנוהלת מממשק הניהול — lib/lessons-store.ts).
+// הרשימה כאן היא גיבוי: משמשת כל עוד הטבלה לא קיימת או לא זמינה, כך שהאתר לא נשבר לעולם.
+// אין להניח מספר קבוע של שיעורים: כל ספירה באתר מחושבת מהרשימה.
 
 export type LessonStatus = "draft" | "published";
 
@@ -18,7 +18,7 @@ export type Lesson = {
   sourceDir: string;
 };
 
-const lessons: Lesson[] = [
+export const CODE_LESSONS: readonly Lesson[] = [
   {
     slug: "setup",
     position: 0,
@@ -117,10 +117,16 @@ const lessons: Lesson[] = [
   },
 ];
 
-export function getPublishedLessons(source: readonly Lesson[] = lessons): Lesson[] {
+/**
+ * השיעורים המפורסמים לפי הסדר. position מחושב מחדש לפי הסדר בפועל (פתיחה = 0, שיעורים = 1, 2, 3…),
+ * כך ששיעור מוסתר או שינוי סדר בממשק הניהול לא משאירים "חור" במספור.
+ */
+export function getPublishedLessons(source: readonly Lesson[] = CODE_LESSONS): Lesson[] {
+  let n = 0;
   return source
     .filter((lesson) => lesson.status === "published")
-    .toSorted((a, b) => a.position - b.position);
+    .toSorted((a, b) => a.position - b.position)
+    .map((lesson) => ({ ...lesson, position: lesson.kind === "intro" ? 0 : ++n }));
 }
 
 export type CourseStats = { lessons: number; videos: number; assignments: number };
@@ -131,8 +137,4 @@ export function getCourseStats(published: readonly Lesson[]): CourseStats {
     videos: published.reduce((sum, lesson) => sum + lesson.videoCount, 0),
     assignments: published.reduce((sum, lesson) => sum + lesson.assignmentCount, 0),
   };
-}
-
-export function getPublishedLesson(slug: string): Lesson | undefined {
-  return getPublishedLessons().find((lesson) => lesson.slug === slug);
 }

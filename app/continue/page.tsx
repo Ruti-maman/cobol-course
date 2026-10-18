@@ -1,12 +1,15 @@
 import { ContinueRedirect } from "@/components/ContinueRedirect";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getPublishedLessons } from "@/lib/course";
+import { loadPublishedLessons } from "@/lib/lessons-store";
 
 export const metadata = { title: "המשיכי מאיפה שעצרת · קורס COBOL" };
 
 // "המשיכי מאיפה שעצרת": הדפדפן זוכר את הסרטון האחרון שנצפה ומעביר אליו (ההרשאה נבדקת בדף השיעור עצמו).
-export default function ContinuePage() {
-  const lessons = getPublishedLessons();
+// השיעורים מתעדכנים מממשק הניהול (revalidatePath); בדיקה נוספת לכל היותר כל 5 דקות.
+export const revalidate = 300;
+
+export default async function ContinuePage() {
+  const lessons = await loadPublishedLessons();
   const first = lessons[0];
   return (
     <>
