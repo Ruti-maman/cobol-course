@@ -2,18 +2,21 @@ import { existsSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import type { Lesson } from "./course";
+import { objectStore } from "./object-store";
 import { createSupabaseAdminClient } from "./supabase/admin";
 
 // אחסון קובצי השיעורים (סרטונים ומטלות). אותו קוד בדיוק במחשב ובאתר החי —
 // ההבדל היחיד הוא איפה הקבצים נמצאים, וזה נקבע בהגדרות (משתני סביבה):
-//   MEDIA_SOURCE  — local (ברירת מחדל): קבצים מהתיקיות במחשב. supabase: מאחסון פרטי ב-Supabase.
+//   MEDIA_SOURCE  — local (ברירת מחדל): קבצים מהתיקיות במחשב. supabase / r2: מאחסון פרטי (lib/object-store.ts).
 //   CONTENT_DIR   — תיקיית המקור (ברירת מחדל: content-source)
 //   COMPRESSED_DIR — סרטונים דחוסים מתחת למגבלת הגודל של האחסון (scripts/compress-large.mjs) — עדיפות ראשונה
 //   ENHANCED_DIR  — סרטונים עם שמע משופר (scripts/enhance-audio.mjs) — עדיפות שנייה (ברירת מחדל: content-enhanced)
 //   PROCESSED_DIR — גרסאות faststart — עדיפות שלישית (ברירת מחדל: content-processed)
 
-export const MEDIA_BUCKET = "course-media";
-export const mediaSource: "local" | "supabase" = process.env.MEDIA_SOURCE === "supabase" ? "supabase" : "local";
+export { MEDIA_BUCKET } from "./object-store";
+/** stored = הקבצים באחסון פרטי (Supabase או R2), ורשימתם בטבלה lesson_media */
+export const mediaSource: "local" | "stored" =
+  process.env.MEDIA_SOURCE === "supabase" || process.env.MEDIA_SOURCE === "r2" ? "stored" : "local";
 
 // turbopackIgnore: הנתיבים נקבעים בזמן ריצה — לא לארוז את תיקיות התוכן לתוך קוד השרת.
 const contentRoot = path.resolve(/* turbopackIgnore: true */ process.env.CONTENT_DIR ?? "content-source");
@@ -86,7 +89,7 @@ async function storedLessonFiles(lesson: Lesson): Promise<StoredFile[]> {
 }
 
 export async function getLessonFiles(lesson: Lesson): Promise<LessonFiles> {
-  if (mediaSource === "supabase") {
+  if (mediaSource === "stored") {
     return buildLessonFiles((await storedLessonFiles(lesson)).map((row) => row.file_name));
   }
   const entries = await readdir(path.join(/* turbopackIgnore: true */ contentRoot, lesson.sourceDir), { withFileTypes: true }).catch(() => []);
@@ -112,9 +115,7 @@ export async function resolveMediaFile(lesson: Lesson, file: string): Promise<st
 export async function readStoredFile(lesson: Lesson, file: string): Promise<Blob | undefined> {
   const row = (await storedLessonFiles(lesson)).find((item) => item.file_name === file);
   if (!row) return undefined;
-  const { data, error } = await createSupabaseAdminClient().storage.from(MEDIA_BUCKET).download(row.storage_key);
-  if (error || !data) return undefined;
-  return data;
+  return objectStore().download(row.storage_key);
 }
 
 /**
@@ -128,9 +129,5 @@ export async function signedMediaUrl(
 ): Promise<string | undefined> {
   const row = (await storedLessonFiles(lesson)).find((item) => item.file_name === file);
   if (!row) return undefined;
-  const { data, error } = await createSupabaseAdminClient()
-    .storage.from(MEDIA_BUCKET)
-    .createSignedUrl(row.storage_key, opts.expiresIn, opts.download ? { download: opts.download } : undefined);
-  if (error || !data) return undefined;
-  return data.signedUrl;
+  return objectStore().signedGetUrl(row.storage_key, opts.expiresIn, opts.download);
 }

@@ -98,7 +98,7 @@ async function streamVideo(request: Request, lesson: Lesson, file: string) {
   return new Response(upstream.body, { status: upstream.status === 206 ? 206 : 200, headers });
 }
 
-/** אתר חי: הקבצים באחסון פרטי ב-Supabase. נקרא רק אחרי בדיקת הזכאות שלמעלה. */
+/** אתר חי: הקבצים באחסון פרטי (Supabase או R2). נקרא רק אחרי בדיקת הזכאות שלמעלה. */
 async function serveFromStorage(request: Request, lesson: Lesson, file: string) {
   const isVideo = path.extname(file).toLowerCase() === ".mp4";
   if (isVideo && !mayStreamVideo(request.headers.get("user-agent"))) {
@@ -135,7 +135,7 @@ export async function GET(request: Request, ctx: RouteContext<"/api/media/[slug]
   if (access === "login") return new Response("Login required", { status: 401 });
   if (access !== "ok") return new Response("Forbidden", { status: 403 });
 
-  if (mediaSource === "supabase") return serveFromStorage(request, lesson, safeDecode(file));
+  if (mediaSource === "stored") return serveFromStorage(request, lesson, safeDecode(file));
 
   const fullPath = (await resolveMediaFile(lesson, file)) ?? (await resolveMediaFile(lesson, safeDecode(file)));
   if (!fullPath) return notFound();

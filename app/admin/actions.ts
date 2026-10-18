@@ -17,7 +17,7 @@ import {
 } from "@/lib/admin-rules";
 import { audit, requireAdmin } from "@/lib/admin-server";
 import { loadPublishedLessons } from "@/lib/lessons-store";
-import { MEDIA_BUCKET } from "@/lib/media-storage";
+import { objectStore } from "@/lib/object-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 // פעולות צד הניהול. כל פעולה בודקת מחדש בשרת שהמשתמשת מנהלת (requireAdmin), מאמתת קלט (zod)
@@ -298,9 +298,9 @@ export async function createUploadUrl(slug: string, fileName: string, size: numb
   const lesson = await lessonDir(String(slug));
   if ("error" in lesson) return lesson;
   const key = storageKey(lesson.dir, fileName.trim());
-  const { data, error } = await createSupabaseAdminClient().storage.from(MEDIA_BUCKET).createSignedUploadUrl(key, { upsert: true });
-  if (error || !data) return { error: "לא הצלחנו להכין את ההעלאה. נסי שוב." };
-  return { url: data.signedUrl, contentType: UPLOAD_TYPES[fileExt(fileName)] ?? "application/octet-stream" };
+  const url = await objectStore().signedPutUrl(key).catch(() => undefined);
+  if (!url) return { error: "לא הצלחנו להכין את ההעלאה. נסי שוב." };
+  return { url, contentType: UPLOAD_TYPES[fileExt(fileName)] ?? "application/octet-stream" };
 }
 
 /** שלב 2: אחרי שהקובץ עלה — מוודאות שהוא באמת באחסון, ורושמות אותו לשיעור. */
@@ -312,9 +312,8 @@ export async function finishUpload(slug: string, fileName: string): Promise<{ ok
   if ("error" in lesson) return lesson;
   const key = storageKey(lesson.dir, name);
   const db = createSupabaseAdminClient();
-  const info = await db.storage.from(MEDIA_BUCKET).info(key);
-  if (info.error || !info.data) return { error: "הקובץ לא הגיע לאחסון. נסי להעלות שוב." };
-  const size = Number((info.data as { size?: number }).size ?? 0);
+  const size = await objectStore().size(key).catch(() => undefined);
+  if (size === undefined) return { error: "הקובץ לא הגיע לאחסון. נסי להעלות שוב." };
   const { error } = await db
     .from("lesson_media")
     .upsert({ lesson_dir: lesson.dir, file_name: name, storage_key: key, size_bytes: size, uploaded_at: new Date().toISOString() }, { onConflict: "storage_key" });
@@ -335,7 +334,7 @@ export async function deleteMedia(formData: FormData) {
   const { data } = await db.from("lesson_media").select("storage_key").eq("lesson_dir", lesson.dir).eq("file_name", file).maybeSingle();
   if (!data) back(path, { err: "file" });
   const key = (data as { storage_key: string }).storage_key;
-  await db.storage.from(MEDIA_BUCKET).remove([key]);
+  await objectStore().remove(key).catch(() => {});
   const { error } = await db.from("lesson_media").delete().eq("storage_key", key);
   if (error) back(path, { err: "db" });
   await audit(admin, "media.delete", { slug, file });

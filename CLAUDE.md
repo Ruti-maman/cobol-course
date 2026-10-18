@@ -232,7 +232,8 @@ npm test           # בדיקות
 | `CONTENT_DIR` | תיקיית קובצי הקורס (סרטונים ומטלות) | `content-source` |
 | `PROCESSED_DIR` | גרסאות מעובדות (faststart), מועדפות על המקור | `content-processed` |
 | `REQUIRE_APP` | `1` = סרטונים רק באפליקציית הצפייה (desktop/) | כבוי |
-| `MEDIA_SOURCE` | `supabase` = סרטונים ומטלות מהאחסון הפרטי ב-Supabase (קישור חתום וזמני); `local` = מהתיקיות במחשב | `local` |
+| `MEDIA_SOURCE` | `supabase` / `r2` = סרטונים ומטלות מאחסון פרטי (Supabase או Cloudflare R2, קישור חתום וזמני, lib/object-store.ts); `local` = מהתיקיות במחשב | `local` |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | Cloudflare R2 — רק בשרת. העתקה מ-Supabase: `node --env-file=.env.local scripts/copy-to-r2.mjs` | — |
 | `SUPABASE_SECRET_KEY` | מפתח סודי — רק בשרת ובסקריפט ההעלאה | — |
 | `ADMIN_EMAILS` | מיילים של מנהלות, מופרדים בפסיק. רק הן נכנסות ל-`/admin`. ריק = אין גישה לאף אחת | — |
 | `DEV_SKIP_ACCESS` | `1` = צפייה בלי התחברות, **רק** ב-`npm run dev` (באתר החי לא פועל) | כבוי |
