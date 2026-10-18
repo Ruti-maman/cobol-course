@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNextPath } from "@/lib/safe-next";
 import { authCookieOptions, supabaseEnv } from "@/lib/supabase/config";
 
 // מרענן את עוגיות ההתחברות לפני כל בקשה, כדי שההתחברות לא תפוג באמצע שיעור.
@@ -25,13 +26,13 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // כניסה מקישור במייל: Supabase מחזיר לאתר עם ?code=… — מחליפים אותו בהתחברות ומנקים את הכתובת.
+  // כניסה מקישור במייל או חזרה מ-Google: Supabase מחזיר לאתר עם ?code=… — מחליפים אותו בהתחברות,
+  // מנקים את הכתובת וממשיכים ליעד (next, נתיב פנימי בלבד).
   const code = request.nextUrl.searchParams.get("code");
   if (code && !request.nextUrl.pathname.startsWith("/api/")) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    const target = request.nextUrl.clone();
-    target.search = "";
-    target.pathname = "/login";
+    const next = safeNextPath(request.nextUrl.searchParams.get("next"), "/login");
+    const target = new URL(error ? "/login" : next, request.nextUrl.origin);
     if (error) target.searchParams.set("error", "link");
     const redirect = NextResponse.redirect(target);
     for (const cookie of response.cookies.getAll()) redirect.cookies.set(cookie);

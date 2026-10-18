@@ -1,11 +1,12 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { safeNextPath } from "@/lib/safe-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-// התחברות בקוד חד-פעמי למייל — בלי סיסמה (CLAUDE.md סעיף 6.3).
+// התחברות בלי סיסמה (CLAUDE.md סעיף 6.3): עם Google, או בקוד חד-פעמי למייל.
 // הגבלת קצב: Supabase מגביל שליחת קודים וניסיונות אימות בצד שלו.
 
 export type LoginState = {
@@ -68,6 +69,24 @@ export async function loginAction(prev: LoginState, formData: FormData): Promise
   }
 
   return { step: "email" };
+}
+
+/**
+ * כניסה עם Google — בלי מייל ובלי סיסמה של האתר, ולכן בלי מגבלת מיילים בשעה.
+ * Google מחזיר ל-/login?code=…, ו-proxy.ts מחליף את הקוד בהתחברות ומעביר ליעד (next).
+ */
+export async function googleLoginAction(formData: FormData): Promise<void> {
+  const next = safeNextPath(formData.get("next"), "/continue");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${proto}://${host}/login?next=${encodeURIComponent(next)}`, queryParams: { prompt: "select_account" } },
+  });
+  if (error || !data.url) redirect("/login?error=google");
+  redirect(data.url);
 }
 
 export async function signOutAction(): Promise<void> {
