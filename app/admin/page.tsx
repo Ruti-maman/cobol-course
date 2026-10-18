@@ -1,15 +1,33 @@
 import Link from "next/link";
 import { daysLeft } from "@/components/admin/format";
-import { allEntitlements, listAllUsers, migrationStatus, summarizeLearners } from "@/lib/admin-data";
+import {
+  allEntitlements,
+  listAllUsers,
+  migrationStatus,
+  summarizeLearners,
+} from "@/lib/admin-data";
+import { isAdminEmail } from "@/lib/admin-rules";
 import { loadAllLessons } from "@/lib/lessons-store";
 
 export default async function AdminHome() {
-  const [status, { lessons, fromDb }] = await Promise.all([migrationStatus(), loadAllLessons()]);
-  const learners = await Promise.all([listAllUsers(), allEntitlements().catch(() => [])])
-    .then(([users, rows]) => summarizeLearners(users, rows))
+  const [status, { lessons, fromDb }] = await Promise.all([
+    migrationStatus(),
+    loadAllLessons(),
+  ]);
+  const learners = await Promise.all([
+    listAllUsers(),
+    allEntitlements().catch(() => []),
+  ])
+    .then(([users, rows]) =>
+      // המנהלות לא נספרות כלומדות (יש להן גישה מלאה ממילא)
+      summarizeLearners(users, rows).filter(
+        (l) => !isAdminEmail(l.email, process.env.ADMIN_EMAILS),
+      ),
+    )
     .catch(() => null);
 
-  const count = (s: string) => learners?.filter((l) => l.status === s).length ?? 0;
+  const count = (s: string) =>
+    learners?.filter((l) => l.status === s).length ?? 0;
   const expiringSoon =
     learners?.filter((l) => {
       const d = l.status === "active" ? daysLeft(l.expiresAt) : null;
@@ -27,9 +45,10 @@ export default async function AdminHome() {
 
       {!ready && (
         <div className="adm-flash bad" role="alert">
-          <b>צעד אחד לפני שמתחילות:</b> יש להריץ פעם אחת את הקובץ <code className="ltr">db/migrations/0003_admin.sql</code> ב-Supabase
-          (SQL Editor ← להדביק את כל הקובץ ← Run). עד אז האתר עובד כרגיל, אבל אי אפשר לשמור תוקף לגישה, להוסיף שיעורים או לנהל
-          קבצים.
+          <b>צעד אחד לפני שמתחילות:</b> יש להריץ פעם אחת את הקובץ{" "}
+          <code className="ltr">db/migrations/0003_admin.sql</code> ב-Supabase
+          (SQL Editor ← להדביק את כל הקובץ ← Run). עד אז האתר עובד כרגיל, אבל אי
+          אפשר לשמור תוקף לגישה, להוסיף שיעורים או לנהל קבצים.
         </div>
       )}
 
@@ -42,7 +61,11 @@ export default async function AdminHome() {
         <Link href="/admin/learners#active" className="adm-card">
           <span>לומדות פעילות</span>
           <b>{count("active")}</b>
-          <small>{expiringSoon ? `${expiringSoon} מסתיימות ב-30 הימים הקרובים` : "גישה בתוקף"}</small>
+          <small>
+            {expiringSoon
+              ? `${expiringSoon} מסתיימות ב-30 הימים הקרובים`
+              : "גישה בתוקף"}
+          </small>
         </Link>
         <Link href="/admin/learners#expired" className="adm-card">
           <span>התוקף הסתיים</span>
@@ -59,17 +82,27 @@ export default async function AdminHome() {
         </Link>
       </div>
 
-      {learners === null && <p className="adm-flash bad">לא הצלחנו לטעון את רשימת הלומדות. נסי לרענן את הדף.</p>}
+      {learners === null && (
+        <p className="adm-flash bad">
+          לא הצלחנו לטעון את רשימת הלומדות. נסי לרענן את הדף.
+        </p>
+      )}
 
       <section className="adm-box">
         <h2>איך מאשרים לומדת חדשה?</h2>
         <ol className="adm-steps">
-          <li>הלומדת נכנסת לאתר ב&quot;כניסה ללומדות&quot; ולוחצת &quot;המשיכי עם Google&quot; — כך היא נרשמת.</li>
           <li>
-            אחרי שהתשלום התקבל: בדף <Link href="/admin/learners">לומדות</Link> לוחצים &quot;אישור לשנה&quot; ליד המייל שלה (או מקלידים
-            מייל ידנית).
+            הלומדת נכנסת לאתר ב&quot;כניסה ללומדות&quot; ולוחצת &quot;המשיכי עם
+            Google&quot; — כך היא נרשמת.
           </li>
-          <li>מאותו רגע כל השיעורים המפורסמים פתוחים לה לשנה. לקראת הסיום אפשר להאריך בלחיצה.</li>
+          <li>
+            אחרי שהתשלום התקבל: בדף <Link href="/admin/learners">לומדות</Link>{" "}
+            לוחצים &quot;אישור לשנה&quot; ליד המייל שלה (או מקלידים מייל ידנית).
+          </li>
+          <li>
+            מאותו רגע כל השיעורים המפורסמים פתוחים לה לשנה. לקראת הסיום אפשר
+            להאריך בלחיצה.
+          </li>
         </ol>
       </section>
     </>

@@ -51,6 +51,11 @@ describe("getLessonAccess — קישור בדיקה לא עוקף זכאות", (
     expect(await getLessonAccess("files")).toBe("ok");
   });
 
+  it("מנהלת בלי שום אישור → גישה מלאה", async () => {
+    state.user = { id: "a1", email: "Owner@Example.com" };
+    expect(await getLessonAccess("files")).toBe("ok");
+  });
+
   it("מבקר לא מחובר בלי קישור → להתחבר", async () => {
     expect(await getLessonAccess("files")).toBe("login");
   });

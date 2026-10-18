@@ -15,6 +15,7 @@ import {
   summarizeLearners,
   type Learner,
 } from "@/lib/admin-data";
+import { isAdminEmail } from "@/lib/admin-rules";
 import { formatWatchTime } from "@/lib/watch-time";
 import { loadPublishedLessons } from "@/lib/lessons-store";
 
@@ -157,7 +158,12 @@ export default async function LearnersPage(
   const shown = (learners ?? []).filter(
     (l) => !q || l.email.toLowerCase().includes(q),
   );
-  const by = (s: Learner["status"]) => shown.filter((l) => l.status === s);
+  // המנהלות רואות הכול בלי אישור ובלי תאריך סיום — לא מופיעות ברשימות הלומדות.
+  const isAdmin = (l: Learner) =>
+    isAdminEmail(l.email, process.env.ADMIN_EMAILS);
+  const admins = shown.filter(isAdmin);
+  const by = (s: Learner["status"]) =>
+    shown.filter((l) => !isAdmin(l) && l.status === s);
 
   return (
     <>
@@ -233,6 +239,16 @@ export default async function LearnersPage(
         </p>
       ) : (
         <>
+          {admins.length > 0 && (
+            <p className="adm-flash">
+              <b>מנהלת — גישה מלאה לכל השיעורים, בלי אישור ובלי תאריך סיום:</b>{" "}
+              {admins.map((a) => (
+                <bdi key={a.id} className="ltr">
+                  {a.email}{" "}
+                </bdi>
+              ))}
+            </p>
+          )}
           <section className="adm-sec" id="pending">
             <h2>
               ממתינות לאישור{" "}
