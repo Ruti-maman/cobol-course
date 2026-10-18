@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
 import { devAccessBypass, loadLessonAccess, type AccessSource, type LessonAccess } from "./access";
 import { activeSlugs, isAdminEmail } from "./admin-rules";
-import { isValidReviewPass, parseReviewCookie, REVIEW_COOKIE } from "./review";
 import { createSupabaseServerClient } from "./supabase/server";
 
 type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
@@ -26,12 +24,6 @@ function supabaseAccessSource(supabase: ServerClient, userId: string | null): Ac
   };
 }
 
-/** קישור בדיקה בתוקף (lib/review.ts) — נבדק מול הסוד שבשרת בכל בקשה. */
-async function hasReviewPass(): Promise<boolean> {
-  const { until, sig } = parseReviewCookie((await cookies()).get(REVIEW_COOKIE)?.value);
-  return isValidReviewPass(process.env.REVIEW_SECRET, until, sig);
-}
-
 /** בדיקת זכאות לשיעור עבור הבקשה הנוכחית (לפי עוגיות ההתחברות). */
 export async function getLessonAccess(lessonSlug: string): Promise<LessonAccess> {
   if (devAccessBypass(process.env)) return "ok";
@@ -39,9 +31,7 @@ export async function getLessonAccess(lessonSlug: string): Promise<LessonAccess>
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase.auth.getUser();
     const user = data.user;
-    // קישור בדיקה (נטפרי) — רק למבקר שלא מחובר. משתמשת מחוברת נבדקת תמיד לפי הזכאות שלה,
-    // כך שעוגיית בדיקה שנשארה בדפדפן לא פותחת שיעורים למי שלא אושרה.
-    if (!user) return (await hasReviewPass()) ? "ok" : "login";
+    if (!user) return "login";
     // המנהלת רואה כל שיעור (גם טיוטה, לתצוגה מקדימה).
     if (isAdminEmail(user.email, process.env.ADMIN_EMAILS)) return "ok";
     return await loadLessonAccess(supabaseAccessSource(supabase, user.id), lessonSlug);
