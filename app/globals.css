@@ -1480,3 +1480,11 @@ body { line-height: 1.7; }
 .login-google .btn { inline-size: 100%; justify-content: center; gap: 0.6rem; }
 .login-google svg { background: #fff; border-radius: 50%; padding: 2px; box-sizing: content-box; }
 .login-or { color: var(--ink-3); font-size: 0.9rem; }
+
+/* דפי מידע (מדיניות פרטיות) */
+.legal { max-inline-size: 46rem; padding-block: 2rem 4rem; display: grid; gap: 0.9rem; line-height: 1.75; color: var(--ink-1); }
+.legal h1 { font-size: var(--t-4); color: var(--ink-0); line-height: 1.2; }
+.legal h2 { font-size: var(--t-2); color: var(--ink-0); margin-block-start: 0.8rem; }
+.legal ul { display: grid; gap: 0.5rem; padding-inline-start: 1.2rem; }
+.legal b { color: var(--ink-0); }
+.foot a { color: inherit; }
