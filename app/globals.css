@@ -1391,6 +1391,24 @@ body { line-height: 1.7; }
 }
 .adm-flash.bad { border-color: #d9822b; background: rgba(217, 130, 43, 0.12); }
 .adm-flash code { font-size: 0.9em; }
+/* הודעה אחרי פעולה: אייקון גדול, ירוק להצלחה, "קפיצה" קטנה כשהיא מופיעה */
+.adm-flash-row { display: flex; align-items: center; gap: 0.8rem; font-size: 1.05rem; animation: flash-pop 0.5s var(--ease-2) both; }
+.adm-flash.good { border-width: 2px; border-color: #1ee86a; background: rgba(30, 232, 106, 0.12); box-shadow: 0 0 0 4px rgba(30, 232, 106, 0.1); }
+.adm-flash-icon {
+  flex: none; inline-size: 2rem; block-size: 2rem; border-radius: 50%; display: grid; place-items: center;
+  font-weight: 900; background: #1ee86a; color: #04140a;
+}
+.adm-flash.bad .adm-flash-icon { background: #d9822b; color: #1a0d00; }
+@keyframes flash-pop { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+/* כפתור שליחה: אייקון + מצב "בתהליך" ברור */
+.adm-submit { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
+.adm-submit:active:not(:disabled) { transform: scale(0.96); }
+.adm-submit:disabled { cursor: progress; opacity: 0.85; }
+.adm-spin {
+  inline-size: 1em; block-size: 1em; border-radius: 50%;
+  border: 2px solid currentColor; border-inline-end-color: transparent; animation: adm-spin 0.7s linear infinite;
+}
+@keyframes adm-spin { to { transform: rotate(360deg); } }
 .adm-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.9rem; }
 .adm-card {
   display: grid; gap: 0.25rem; padding: 1.1rem 1.2rem; border: 1px solid var(--line-1); border-radius: var(--r-3);

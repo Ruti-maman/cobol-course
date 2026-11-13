@@ -1,4 +1,5 @@
 // הודעת הצלחה / שגיאה אחרי פעולה בצד הניהול. רק קודים קבועים — לא מציגים טקסט חופשי מהכתובת.
+import { ScrollHere } from "./ScrollHere";
 
 const ok: Record<string, (p: Params) => string> = {
   granted: (p) => `הגישה אושרה ל-${p.email}. היא יכולה להתחבר עכשיו עם חשבון ה-Google של המייל הזה.`,
@@ -32,9 +33,12 @@ export function Flash({ params }: { params: Params }) {
   const failure = params.err && err[params.err];
   if (!success && !failure) return null;
   return (
-    <p className={`adm-flash${failure ? " bad" : ""}`} role={failure ? "alert" : "status"}>
-      {failure || success}
-    </p>
+    <ScrollHere>
+      <p className={`adm-flash adm-flash-row${failure ? " bad" : " good"}`} role={failure ? "alert" : "status"}>
+        <span className="adm-flash-icon" aria-hidden="true">{failure ? "!" : "✓"}</span>
+        <span>{failure || success}</span>
+      </p>
+    </ScrollHere>
   );
 }
 

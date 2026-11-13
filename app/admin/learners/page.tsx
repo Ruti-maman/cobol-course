@@ -6,6 +6,7 @@ import {
 } from "@/app/admin/actions";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { Flash, flatParams } from "@/components/admin/Flash";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 import { daysLeft, fmtDate } from "@/components/admin/format";
 import {
   allActivity,
@@ -88,9 +89,9 @@ function Rows({ list, empty }: { list: Learner[]; empty: string }) {
                   <form action={grantAccess}>
                     <input type="hidden" name="email" value={l.email} />
                     <input type="hidden" name="days" value="365" />
-                    <button className="btn btn-1 sm" type="submit">
+                    <SubmitButton className="btn btn-1 sm" icon="check" pendingText="מאשרת…">
                       אישור לשנה
-                    </button>
+                    </SubmitButton>
                   </form>
                 ) : (
                   <>
@@ -98,12 +99,12 @@ function Rows({ list, empty }: { list: Learner[]; empty: string }) {
                       <input type="hidden" name="userId" value={l.id} />
                       <input type="hidden" name="email" value={l.email} />
                       <input type="hidden" name="days" value="365" />
-                      <button
+                      <SubmitButton
                         className={`btn sm ${l.status === "expired" ? "btn-1" : "btn-2"}`}
-                        type="submit"
+                        pendingText="מאריכה…"
                       >
                         הארכה בשנה
-                      </button>
+                      </SubmitButton>
                     </form>
                     <form action={revokeAccess}>
                       <input type="hidden" name="userId" value={l.id} />
@@ -213,9 +214,9 @@ export default async function LearnersPage(
               placeholder="למשל: העברה בנקאית 18.10"
             />
           </label>
-          <button className="btn btn-1" type="submit">
+          <SubmitButton className="btn btn-1" icon="check" pendingText="מאשרת…">
             אישור גישה
-          </button>
+          </SubmitButton>
         </form>
       </section>
 
